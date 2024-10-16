@@ -1,7 +1,9 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 
+import AntDesign from '@expo/vector-icons/AntDesign';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -15,20 +17,29 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       <Tabs.Screen
-        name="index"
+        name="excursion"
         options={{
-          title: 'Home',
+          title: 'Excursiones',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="payment"
         options={{
-          title: 'Explore',
+          title: 'Mis reservaciones',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <AntDesign name="book" size={24} color="black" />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="customer"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome6 name="user" size={24} color="black" />
           ),
         }}
       />
