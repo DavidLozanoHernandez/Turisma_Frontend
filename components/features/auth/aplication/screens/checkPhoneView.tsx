@@ -2,33 +2,26 @@ import { Link } from "expo-router";
 import { View, StyleSheet, Text, TextInput } from "react-native";
 import { useState } from "react";
 
-export function NewPasswordView() {
-  const [newPassword, setNewPassword] = useState(""); // Estado para almacenar la nueva contraseña
-  const [confirmPassword, setConfirmPassword] = useState("");
+export function CheckPhoneView() {
+  const [phone, setPhone] = useState(""); // Estado para almacenar el número de teléfono
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Ingresa tu nueva contraseña</Text>
+        <Text style={styles.title}>
+          Por favor, verifica tu número de teléfono para confirmar tu cuenta
+        </Text>
 
         <TextInput
           style={styles.input}
-          placeholder="Nueva contraseña"
-          value={newPassword}
-          onChangeText={setNewPassword}
-          secureTextEntry
-          placeholderTextColor="#ccc"
-        />
-                <TextInput
-          style={styles.input}
-          placeholder="Confirma tu contraseña"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
+          placeholder="Número de teléfono"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
           placeholderTextColor="#ccc"
         />
 
-        <Link href="/auth/login" style={styles.link}>Cambiar contraseña</Link>
+        <Link href="/auth/newPassword" style={styles.link}>Verificar</Link>
       </View>
     </View>
   );
@@ -82,10 +75,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
     backgroundColor: '#28A745',
-    paddingVertical: 8, // Espaciado arriba y abajo
-    paddingHorizontal: 20, // Espaciado lateral para reducir el ancho
+    paddingVertical: 8,
+    paddingHorizontal: 20,
     borderRadius: 7,
-    alignSelf: 'center',  // Centra el botón en el contenedor
-    width: '80%',  // Limita el ancho del enlace
+    alignSelf: 'center',
+    width: '90%',
   },
 });
