@@ -8,7 +8,7 @@ export function CodeAuthenticationView() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>Ingresa el código de autenticación</Text>
+        <Text style={styles.title}>Ingresa el código de autenticación para verificar tu cuenta</Text>
 
         <TextInput
           style={styles.input}
@@ -19,7 +19,7 @@ export function CodeAuthenticationView() {
           placeholderTextColor="#ccc"
         />
 
-        <Link href="/auth/newPassword" style={styles.link}>Confirmar</Link>
+        <Link href="/auth/login" style={styles.link}>Confirmar</Link>
       </View>
     </View>
   );

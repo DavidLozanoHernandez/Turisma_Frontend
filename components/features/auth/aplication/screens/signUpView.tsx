@@ -6,13 +6,14 @@ export function SignUpView() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>REGÍSTRATE CON TU CUENTA</Text>
+        <Text style={styles.title}>¡Bienvenido!<br />Regístrate</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -57,9 +58,18 @@ export function SignUpView() {
             autoCapitalize="none"
             placeholderTextColor="#ccc"
           />
+          <TextInput
+            style={styles.input}
+            placeholder="Confirma tu contraseña"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            autoCapitalize="none"
+            placeholderTextColor="#ccc"
+          />
         </View>
 
-        <Link href="/auth/checkMail" style={styles.link}>Registrarse</Link>
+        <Link href="/auth/codeAuthentication" style={styles.link}>Registrarse</Link>
         <Link href="/auth/login" style={styles.link}>¿Ya tienes una cuenta? Inicia sesión</Link>
       </View>
     </View>
