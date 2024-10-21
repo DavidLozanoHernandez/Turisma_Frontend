@@ -1,40 +1,27 @@
 import { Link } from "expo-router";
+import { View, StyleSheet, Text, TextInput } from "react-native";
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
 
-export function LoginView() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export function CheckPhoneView() {
+  const [phone, setPhone] = useState(""); // Estado para almacenar el número de teléfono
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>¡Bienvenido!<br />Inicia sesión</Text>
+        <Text style={styles.title}>
+          Por favor, verifica tu número de teléfono para confirmar tu cuenta
+        </Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu correo electrónico"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Número de teléfono"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+          placeholderTextColor="#ccc"
+        />
 
-        <Link href="/home" style={styles.link}>Iniciar sesión</Link>
-        <Link href="/auth/signUp" style={styles.link}>Regístrate</Link>
-        <Link href="/auth/optionsLostPassword" style={styles.link}>¿Olvidaste tu contraseña?</Link>
+        <Link href="/auth/newPassword" style={styles.link}>Verificar</Link>
       </View>
     </View>
   );
@@ -70,10 +57,6 @@ const styles = StyleSheet.create({
     marginBottom: 35,
     textAlign: 'center',
   },
-  inputContainer: {
-    width: '100%',
-    marginBottom: 20,
-  },
   input: {
     width: '100%',
     height: 50,
@@ -82,7 +65,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: 16,
     color: '#fff',
-    marginBottom: 10,
+    marginBottom: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },

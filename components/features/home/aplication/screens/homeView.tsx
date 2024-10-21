@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { Text, View } from "react-native";
 
+//David
 export function HomeView(){
     return(
         <View>

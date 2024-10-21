@@ -1,9 +1,10 @@
 import { Stack } from "expo-router";
 
 export default function RootLayout() {
-    return(
+    return (
         <Stack>
-            <Stack.Screen name="index" />
+            <Stack.Screen name="reservations" />
+            <Stack.Screen name="makeReservation" />
         </Stack>
     )
 }
