@@ -17,16 +17,16 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       <Tabs.Screen
-        name="excursion"
+        name="home"
         options={{
-          title: 'Excursiones',
+          title: 'Inicio',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="payment"
+        name="reservation"
         options={{
           title: 'Mis reservaciones',
           tabBarIcon: ({ color, focused }) => (
@@ -41,6 +41,18 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <FontAwesome6 name="user" size={24} color="black" />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="payment"
+        options={{
+          href: null
+        }}
+      />
+      <Tabs.Screen
+        name="excursion"
+        options={{
+          href: null
         }}
       />
     </Tabs>
