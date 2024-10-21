@@ -5,7 +5,7 @@ export function ExcursionView() {
     return(
         <View>
             <Text>Detalles de la excursion</Text>
-            <Link href={"/payment"}>Realizar reserva</Link>
+            <Link href={"/reservation/makeReservation"}>Realizar reserva</Link>
         </View>
     )
 }
