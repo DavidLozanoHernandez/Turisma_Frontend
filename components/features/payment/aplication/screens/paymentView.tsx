@@ -4,7 +4,7 @@ import { Text, View } from "react-native";
 export function PaymentView(){
     return(
         <View>
-            <Text>Realiza tu reserva</Text>
+            <Text>Realiza el pago de tu reserva</Text>
         </View>
     )
 }
