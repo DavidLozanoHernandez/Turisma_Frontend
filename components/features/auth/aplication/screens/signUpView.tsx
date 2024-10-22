@@ -10,6 +10,7 @@ export function SignUpView() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('')
@@ -42,7 +43,7 @@ export function SignUpView() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>REGÍSTRATE CON TU CUENTA</Text>
+        <Text style={styles.title}>¡Bienvenido!<br />Regístrate</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
@@ -87,6 +88,7 @@ export function SignUpView() {
             autoCapitalize="none"
             placeholderTextColor="#ccc"
           />
+<<<<<<< HEAD
           {error ? <Text>{error}</Text> : null}
         </View>
 
@@ -111,6 +113,21 @@ export function SignUpView() {
           </View>
         </Modal>
 
+=======
+          <TextInput
+            style={styles.input}
+            placeholder="Confirma tu contraseña"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            autoCapitalize="none"
+            placeholderTextColor="#ccc"
+          />
+        </View>
+
+        <Link href="/auth/codeAuthentication" style={styles.link}>Registrarse</Link>
+        <Link href="/auth/login" style={styles.link}>¿Ya tienes una cuenta? Inicia sesión</Link>
+>>>>>>> 19fecda61a837d0490d4dbfe444006aa9d86f4a8
       </View>
     </View>
   );
