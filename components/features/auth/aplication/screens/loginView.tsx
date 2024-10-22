@@ -7,7 +7,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const loginDatasource = new AuthDatasoruceImp();
 
 export function LoginView() {
-<<<<<<< HEAD
   const [username, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -60,42 +59,8 @@ export function LoginView() {
           <TouchableOpacity onPress={handleLogin} style={styles.link}>Iniciar sesión</TouchableOpacity>
           <Link href="/auth/signUp" style={styles.link}>Regístrate</Link>
           <Link href="/auth/optionsLostPassword" style={styles.link}>¿Olvidaste tu contraseña?</Link>
-=======
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>¡Bienvenido!<br />Inicia sesión</Text>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu correo electrónico"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
->>>>>>> 19fecda61a837d0490d4dbfe444006aa9d86f4a8
         </View>
-
-        <Link href="/home" style={styles.link}>Iniciar sesión</Link>
-        <Link href="/auth/signUp" style={styles.link}>Regístrate</Link>
-        <Link href="/auth/optionsLostPassword" style={styles.link}>¿Olvidaste tu contraseña?</Link>
       </View>
-    </View>
   );
 }
 

@@ -88,7 +88,6 @@ export function SignUpView() {
             autoCapitalize="none"
             placeholderTextColor="#ccc"
           />
-<<<<<<< HEAD
           {error ? <Text>{error}</Text> : null}
         </View>
 
@@ -112,22 +111,6 @@ export function SignUpView() {
             </View>
           </View>
         </Modal>
-
-=======
-          <TextInput
-            style={styles.input}
-            placeholder="Confirma tu contraseña"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
-        </View>
-
-        <Link href="/auth/codeAuthentication" style={styles.link}>Registrarse</Link>
-        <Link href="/auth/login" style={styles.link}>¿Ya tienes una cuenta? Inicia sesión</Link>
->>>>>>> 19fecda61a837d0490d4dbfe444006aa9d86f4a8
       </View>
     </View>
   );
