@@ -1,10 +1,45 @@
-import { Link } from "expo-router";
-import { View, StyleSheet, Text, TextInput } from "react-native";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { View, StyleSheet, Text, TextInput, Modal } from "react-native";
 import { useState } from "react";
+import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
+const newPasword = new AuthDatasoruceImp();
 
 export function NewPasswordView() {
+  const { method, email } = useLocalSearchParams<{ method: 'email' | 'sms', email: string }>();
+  console.log(email)
   const [newPassword, setNewPassword] = useState(""); // Estado para almacenar la nueva contraseña
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [token, setToken] = useState("")
+  const [error, setError] = useState('')
+  const [modalVisible, setModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const handleRegister = async () => {
+    try{
+      const data = await newPasword.changepassword(email, newPassword, token)
+      console.log(email, newPassword, token)
+      console.log("Registro exitoso:", data);
+
+      //quiero un mensaje para informarle al usuario que revise su correo electronico y lo direccione en 10 segundos a login
+      setSuccessMessage("Cambio de contraseña exitoso, volveras a login para poder acceder a tu cuenta");
+      setModalVisible(true);
+
+      setTimeout(() => {
+        setModalVisible(false); // Cerrar el modal
+        router.push('/auth/login'); // Redirigir a la pantalla de login
+      }, 10000); // 10 segundos en milisegundos
+
+    }catch (err) {
+      console.log(email, newPassword, token)
+      if (err instanceof Error) {
+        setError(err.message);
+      }else{
+        setError('Ocurrio un error desconocido')
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -28,8 +63,36 @@ export function NewPasswordView() {
           placeholderTextColor="#ccc"
         />
 
-        <Link href="/auth/login" style={styles.link}>Cambiar contraseña</Link>
+<TextInput
+          style={styles.input}
+          placeholder="Token"
+          value={token}
+          onChangeText={setToken}
+          //secureTextEntry
+          placeholderTextColor="#ccc"
+        />
+        {error ? <Text>{error}</Text> : null}
+
+        <TouchableOpacity onPress={handleRegister} style={styles.link}>Cambiar contraseña</TouchableOpacity>
       </View>
+      <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>{successMessage}</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
     </View>
   );
 }
@@ -87,5 +150,32 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     alignSelf: 'center',  // Centra el botón en el contenedor
     width: '80%',  // Limita el ancho del enlace
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 15,
+  },
+  closeButton: {
+    backgroundColor: '#28A745',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });

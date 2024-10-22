@@ -1,15 +1,41 @@
-import { Link } from "expo-router";
-import { View, StyleSheet, Text } from "react-native";
+import { useRouter } from "expo-router";
+import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export function OptionslostPasswordView() {
+  const router = useRouter(); // Hook de Expo Router
+
+  // Función para manejar la navegación
+  const handleOptionPress = (method: 'email' | 'sms') => {
+    // Usa un formato de query string para pasar los parámetros
+    if (method === 'email') {
+      router.push(`/auth/checkMail?method=${method}`);  // Enviando el parámetro 'method'
+    } else if (method === 'sms') {
+      router.push(`/auth/checkPhone?method=${method}`);  // Enviando el parámetro 'method'
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <Text style={styles.title}>
           Elige la opción para restablecer tu contraseña
         </Text>
-        <Link href="/auth/checkMail" style={styles.link}>Email</Link>
-        <Link href="/auth/checkPhone" style={styles.link}>Teléfono</Link>
+
+        {/* Botón para Email */}
+        <TouchableOpacity
+          style={styles.link}
+          onPress={() => handleOptionPress('email')}
+        >
+          <Text style={styles.linkText}>Email</Text>
+        </TouchableOpacity>
+
+        {/* Botón para Teléfono */}
+        <TouchableOpacity
+          style={styles.link}
+          onPress={() => handleOptionPress('sms')}
+        >
+          <Text style={styles.linkText}>Teléfono</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -56,5 +82,9 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     alignSelf: 'center',
     width: '90%',
+  },
+  linkText: {
+    color: '#fff',
+    textAlign: 'center',
   },
 });
