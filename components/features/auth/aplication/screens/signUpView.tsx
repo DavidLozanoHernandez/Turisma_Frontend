@@ -13,7 +13,7 @@ export function SignUpView() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>¡Bienvenido!<br />Regístrate</Text>
+        <Text style={styles.title}>¡Bienvenido! Regístrate</Text>
 
         <View style={styles.inputContainer}>
           <TextInput

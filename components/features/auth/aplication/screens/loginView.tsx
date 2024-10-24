@@ -9,7 +9,7 @@ export function LoginView() {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.title}>¡Bienvenido!<br />Inicia sesión</Text>
+        <Text style={styles.title}>¡Bienvenido! Inicia sesión</Text>
 
         <View style={styles.inputContainer}>
           <TextInput
