@@ -1,42 +1,67 @@
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const loginDatasource = new AuthDatasoruceImp();
 
 export function LoginView() {
-  const [email, setEmail] = useState('');
+  const [username, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>¡Bienvenido! Inicia sesión</Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu correo electrónico"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
+  const handleLogin = async () => {
+    try {
+        const data = await loginDatasource.login(username, password);
+        const {accessToken, user} = data;
+
+        await AsyncStorage.setItem('authToken', accessToken);
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+
+        router.replace('/(tabs)/excursion')
+    } catch (err) {
+        if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('Ocurrió un error desconocido');
+        }
+    }
+};
+  
+    return (
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Text style={styles.title}>Bienvenido, inicia sesión</Text>
+  
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Introduce tu correo electrónico"
+              value={username}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#ccc"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Contraseña"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              placeholderTextColor="#ccc"
+            />
+            {error ? <Text>{error}</Text>: null}
+          </View>
+
+          <TouchableOpacity onPress={handleLogin} style={styles.link}>Iniciar sesión</TouchableOpacity>
+          <Link href="/auth/signUp" style={styles.link}>Regístrate</Link>
+          <Link href="/auth/optionsLostPassword" style={styles.link}>¿Olvidaste tu contraseña?</Link>
         </View>
-
-        <Link href="/home" style={styles.link}>Iniciar sesión</Link>
-        <Link href="/auth/signUp" style={styles.link}>Regístrate</Link>
-        <Link href="/auth/optionsLostPassword" style={styles.link}>¿Olvidaste tu contraseña?</Link>
       </View>
-    </View>
   );
 }
 

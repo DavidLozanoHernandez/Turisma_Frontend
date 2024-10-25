@@ -1,9 +1,36 @@
-import { Link } from "expo-router";
-import { View, StyleSheet, Text, TextInput } from "react-native";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { View, StyleSheet, Text, TextInput, TouchableOpacity, Modal } from "react-native";
 import { useState } from "react";
+import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
+
+const sendDatasource = new AuthDatasoruceImp
 
 export function CheckMailView() {
+  const { method } = useLocalSearchParams<{ method: 'email' | 'sms' }>();
   const [email, setEmail] = useState(""); // Estado para almacenar el correo
+  const [error, setError] = useState('')
+  const [modalVisible, setModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const handsend = async () => {
+    try{
+    const data = await sendDatasource.sendVerification(email, method);
+
+    setSuccessMessage("Token de verificación enviado. Por favor, revisa tu bandeja de entrada.");
+      setModalVisible(true);
+
+      setTimeout(() => {
+        setModalVisible(false); // Cerrar el modal
+        router.push(`/auth/newPassword?email=${email}&method=${method}`)
+      }, 10000); // 10 segundos en milisegundos
+    }catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }else{
+        setError('Ocurrio un error desconocido')
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -21,9 +48,30 @@ export function CheckMailView() {
           autoCapitalize="none"
           placeholderTextColor="#ccc"
         />
+        {error ? <Text>{error}</Text> : null}
 
-        <Link href="/auth/newPassword" style={styles.link}>Verificar</Link>
+        {/* Enlace modificado para incluir el email y el método en la URL */}
+        <TouchableOpacity style={styles.link} onPress={handsend}>Enviar</TouchableOpacity>
       </View>
+
+      <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>{successMessage}</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
     </View>
   );
 }
@@ -78,5 +126,32 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     alignSelf: 'center',
     width: '90%',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 15,
+  },
+  closeButton: {
+    backgroundColor: '#28A745',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });

@@ -1,6 +1,10 @@
-import { Link } from "expo-router";
-import { View, StyleSheet, Text, TextInput } from "react-native";
+import { Link, router } from "expo-router";
+import { View, StyleSheet, Text, TextInput, Modal } from "react-native";
 import { useState } from "react";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
+
+const registerDataSource = new AuthDatasoruceImp();
 
 export function SignUpView() {
   const [firstName, setFirstName] = useState('');
@@ -9,6 +13,32 @@ export function SignUpView() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [error, setError] = useState('')
+  const [modalVisible, setModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const handleRegister = async () => {
+    try{
+      const data = await registerDataSource.register(firstName, lastName, password, phone, email)
+      console.log("Registro exitoso:", data);
+
+      //quiero un mensaje para informarle al usuario que revise su correo electronico y lo direccione en 10 segundos a login
+      setSuccessMessage("Correo electrónico de verificación enviado. Por favor, revisa tu bandeja de entrada.");
+      setModalVisible(true);
+
+      setTimeout(() => {
+        setModalVisible(false); // Cerrar el modal
+        router.push('/auth/login'); // Redirigir a la pantalla de login
+      }, 10000); // 10 segundos en milisegundos
+
+    }catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      }else{
+        setError('Ocurrio un error desconocido')
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -58,19 +88,29 @@ export function SignUpView() {
             autoCapitalize="none"
             placeholderTextColor="#ccc"
           />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirma tu contraseña"
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-            secureTextEntry
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
+          {error ? <Text>{error}</Text> : null}
         </View>
 
-        <Link href="/auth/codeAuthentication" style={styles.link}>Registrarse</Link>
-        <Link href="/auth/login" style={styles.link}>¿Ya tienes una cuenta? Inicia sesión</Link>
+        <TouchableOpacity onPress={handleRegister} style={styles.link}>Registrarse</TouchableOpacity>
+        
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <Text style={styles.modalText}>{successMessage}</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.closeButtonText}>Cerrar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </View>
     </View>
   );
@@ -130,5 +170,32 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     alignSelf: 'center',
     width: '90%',
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContainer: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 15,
+  },
+  closeButton: {
+    backgroundColor: '#28A745',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
   },
 });
