@@ -25,6 +25,7 @@ export function ExcursionView() {
     }, [user]);
 
     return(
+    <View>
         <View>
             <Text>Detalles de la excursion</Text>
              {user ? (
@@ -52,7 +53,6 @@ export function ExcursionView() {
 
         <Link href={"/reservation/makeReservation"} style={styles.link}>Realizar reserva</Link>
       </View>
-    </View>
   );
 }
 
