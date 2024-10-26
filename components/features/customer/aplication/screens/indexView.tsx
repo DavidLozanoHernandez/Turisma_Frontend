@@ -1,10 +1,32 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { AuthContext } from "../../../auth/aplication/providers/authProvider";
+import { useRouter } from "expo-router";
 
 export function CustomerView() {
-
+    const authContext = useContext(AuthContext);
+    const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
+
+    if(!authContext){
+        return(
+            <View>
+                <Text>Error</Text>
+            </View>
+        )
+    }
+
+    const { user } = authContext;
+    const { userToken } = authContext;
+    console.log(user?.id)
+    console.log(userToken)
+
+    useEffect(() => {
+        if (!user) {
+            router.replace('/auth/login');
+        }
+    }, [user]);
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
