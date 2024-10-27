@@ -20,7 +20,7 @@ export function LoginView() {
         await AsyncStorage.setItem('authToken', accessToken);
         await AsyncStorage.setItem('user', JSON.stringify(user));
 
-        router.replace('/(tabs)/excursion')
+        router.replace('/(tabs)/home')
     } catch (err) {
         if (err instanceof Error) {
             setError(err.message);
@@ -57,7 +57,7 @@ export function LoginView() {
             {error ? <Text>{error}</Text>: null}
           </View>
 
-          <TouchableOpacity onPress={handleLogin} style={styles.link}>Iniciar sesión</TouchableOpacity>
+          <TouchableOpacity onPress={handleLogin}><Text style={styles.link}>Iniciar sesión</Text></TouchableOpacity>
           <Link href="/auth/signUp" style={styles.link}>Regístrate</Link>
           <Link href="/auth/optionsLostPassword" style={styles.link}>¿Olvidaste tu contraseña?</Link>
         </View>

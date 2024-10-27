@@ -5,6 +5,7 @@ import { User } from "../../domain/entities/auth";
 
 class AuthDatasoruceImp implements Authsource{
     async login(username: string, password: string): Promise<any> {
+        console.log(username, password)
         try{
             const response = await apiClient.post('/auth/login', {username, password});
             console.log(response)

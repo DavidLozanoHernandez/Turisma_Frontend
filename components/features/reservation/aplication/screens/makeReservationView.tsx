@@ -22,9 +22,9 @@ export function MakeReservationsView() {
           <Text style={styles.seatText}>Tablero para elegir los asientos</Text>
         </View>
 
-        <Link href="/payment" style={styles.link}>Realizar pago</Link>
+        {/* <Link href="/payment" style={styles.link}>Realizar pago</Link>
 
-        <Link href="/excursion" style={styles.linkCancel}>Cancelar</Link>
+        <Link href="/excursion" style={styles.linkCancel}>Cancelar</Link> */}
       </View>
     </View>
   );

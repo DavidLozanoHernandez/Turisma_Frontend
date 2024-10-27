@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TextInput } from "react-native";
 import { useState } from "react";
 
 export function CodeAuthenticationView() {
-  const [code, setCode] = useState(""); // Estado para almacenar el código
+  const [code, setCode] = useState("");
 
   return (
     <View style={styles.container}>
@@ -19,7 +19,6 @@ export function CodeAuthenticationView() {
           placeholderTextColor="#ccc"
         />
 
-        <Link href="/auth/login" style={styles.link}>Confirmar</Link>
       </View>
     </View>
   );

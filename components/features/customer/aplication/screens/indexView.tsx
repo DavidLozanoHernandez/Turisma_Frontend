@@ -84,17 +84,17 @@ export function CustomerView() {
 const styles = StyleSheet.create({
     scrollContainer: {
         flexGrow: 1,
-        justifyContent: "center", // Centra verticalmente el contenido
+        justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#0f0c29", // Fondo azul
+        backgroundColor: "#0f0c29",
     },
     contenedor: {
         display: "flex",
-        alignItems: "center", // Centra la imagen
-        justifyContent: "center", // Centra verticalmente
+        alignItems: "center",
+        justifyContent: "center",
         flexDirection: "column",
         padding: 20,
-        backgroundColor: "rgba(255, 255, 255, 0.10)", // Color gris para la interfaz
+        backgroundColor: "rgba(255, 255, 255, 0.10)",
         borderRadius: 20,
         width: "80%",
         height: "80%",
@@ -106,17 +106,17 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     inputContainer: {
-        alignItems: "flex-start", // Alinea los textos a la izquierda
-        width: '100%', // Asegura que ocupe todo el ancho del contenedor
+        alignItems: "flex-start",
+        width: '100%',
     },
     input: {
         height: 40,
         borderWidth: 1,
         borderRadius: 10,
         paddingHorizontal: 10,
-        width: '100%', // Ancho completo
+        width: '100%',
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        marginBottom: 10, // Espaciado entre inputs
+        marginBottom: 10,
         borderColor: 'rgba(255, 255, 255, 0.2)',
         color: '#fff',
     },
@@ -124,8 +124,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         color: '#fff',
-        textAlign: "left", // Alineación a la izquierda
-        marginBottom: 5, // Espacio entre el texto y el input
+        textAlign: "left",
+        marginBottom: 5,
     },
     button: {
         backgroundColor: '#28A745',
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fondo semi-transparente
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
         width: '80%',
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     closeButton: {
-        backgroundColor: '#007BFF', // Color del botón
+        backgroundColor: '#007BFF',
         padding: 10,
         borderRadius: 5,
     },
