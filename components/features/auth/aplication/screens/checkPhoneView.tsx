@@ -21,6 +21,8 @@ export function CheckPhoneView() {
           placeholderTextColor="#ccc"
         />
 
+        <Link href="/auth/newPassword" style={styles.link}>Verificar</Link>
+
       </View>
     </View>
   );
