@@ -32,11 +32,11 @@ export default function RootLayout() {
       <AuthProvider>
         <Stack>
           <Stack.Screen name='auth' options={{ headerShown: false }} />
-          <Stack.Screen name='customer' options={{ headerShown: false }} />
+          {/* <Stack.Screen name='customer' options={{ headerShown: false }} /> */}
           <Stack.Screen name='excursion' options={{ headerShown: false }} />
-          <Stack.Screen name='home' options={{ headerShown: false }} />
+          {/* <Stack.Screen name='home' options={{ headerShown: false }} /> */}
           <Stack.Screen name='payment' options={{ headerShown: false }} />
-          <Stack.Screen name='reservation' options={{ headerShown: false }} />
+          {/* <Stack.Screen name='reservation' options={{ headerShown: false }} /> */}
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
         </Stack>
