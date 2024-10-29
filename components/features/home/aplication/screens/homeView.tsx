@@ -39,7 +39,7 @@ export function HomeView() {
                 <Text style={styles.price}>$500 MXN/Persona</Text>
                 <Text style={styles.text}>Viaje redondo</Text>
 
-                <Link href="/excursion" style={styles.link}>Detalles de la excursión</Link>
+                {/* <Link href="/excursion" style={styles.link}>Detalles de la excursión</Link> */}
             </View>
 
         </ScrollView>

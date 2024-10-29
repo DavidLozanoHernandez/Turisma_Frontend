@@ -2,14 +2,14 @@ import { Link, router, useLocalSearchParams } from "expo-router";
 import { View, StyleSheet, Text, TextInput, Modal } from "react-native";
 import { useState } from "react";
 import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 
 const newPasword = new AuthDatasoruceImp();
 
 export function NewPasswordView() {
   const { method, email } = useLocalSearchParams<{ method: 'email' | 'sms', email: string }>();
   console.log(email)
-  const [newPassword, setNewPassword] = useState(""); // Estado para almacenar la nueva contraseña
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [token, setToken] = useState("")
   const [error, setError] = useState('')
@@ -17,65 +17,65 @@ export function NewPasswordView() {
   const [successMessage, setSuccessMessage] = useState('');
 
   const handleRegister = async () => {
-    try{
+    try {
       const data = await newPasword.changepassword(email, newPassword, token)
       console.log(email, newPassword, token)
       console.log("Registro exitoso:", data);
 
-      //quiero un mensaje para informarle al usuario que revise su correo electronico y lo direccione en 10 segundos a login
       setSuccessMessage("Cambio de contraseña exitoso, volveras a login para poder acceder a tu cuenta");
       setModalVisible(true);
 
       setTimeout(() => {
-        setModalVisible(false); // Cerrar el modal
-        router.push('/auth/login'); // Redirigir a la pantalla de login
-      }, 10000); // 10 segundos en milisegundos
+        setModalVisible(false);
+        router.push('/auth/login');
+      }, 10000);
 
-    }catch (err) {
+    } catch (err) {
       console.log(email, newPassword, token)
       if (err instanceof Error) {
         setError(err.message);
-      }else{
+      } else {
         setError('Ocurrio un error desconocido')
       }
     }
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>Ingresa tu nueva contraseña</Text>
+    <GestureHandlerRootView>
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Text style={styles.title}>Ingresa tu nueva contraseña</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Nueva contraseña"
-          value={newPassword}
-          onChangeText={setNewPassword}
-          secureTextEntry
-          placeholderTextColor="#ccc"
-        />
-                <TextInput
-          style={styles.input}
-          placeholder="Confirma tu contraseña"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          secureTextEntry
-          placeholderTextColor="#ccc"
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Nueva contraseña"
+            value={newPassword}
+            onChangeText={setNewPassword}
+            secureTextEntry
+            placeholderTextColor="#ccc"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Confirma tu contraseña"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+            placeholderTextColor="#ccc"
+          />
 
-<TextInput
-          style={styles.input}
-          placeholder="Token"
-          value={token}
-          onChangeText={setToken}
-          //secureTextEntry
-          placeholderTextColor="#ccc"
-        />
-        {error ? <Text>{error}</Text> : null}
+          <TextInput
+            style={styles.input}
+            placeholder="Token"
+            value={token}
+            onChangeText={setToken}
+            //secureTextEntry
+            placeholderTextColor="#ccc"
+          />
+          {error ? <Text>{error}</Text> : null}
 
-        <TouchableOpacity onPress={handleRegister} style={styles.link}>Cambiar contraseña</TouchableOpacity>
-      </View>
-      <Modal
+          <TouchableOpacity onPress={handleRegister}><Text style={styles.link}>Cambiar contraseña</Text></TouchableOpacity>
+        </View>
+        <Modal
           animationType="slide"
           transparent={true}
           visible={modalVisible}
@@ -93,7 +93,8 @@ export function NewPasswordView() {
             </View>
           </View>
         </Modal>
-    </View>
+      </View>
+    </GestureHandlerRootView>
   );
 }
 

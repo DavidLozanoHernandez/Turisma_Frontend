@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, TextInput } from "react-native";
 import { useState } from "react";
 
 export function CheckPhoneView() {
-  const [phone, setPhone] = useState(""); // Estado para almacenar el número de teléfono
+  const [phone, setPhone] = useState("");
 
   return (
     <View style={styles.container}>
@@ -21,7 +21,6 @@ export function CheckPhoneView() {
           placeholderTextColor="#ccc"
         />
 
-        <Link href="/auth/newPassword" style={styles.link}>Verificar</Link>
       </View>
     </View>
   );

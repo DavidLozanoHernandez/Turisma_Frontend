@@ -2,59 +2,60 @@ import { Link, router, useLocalSearchParams } from "expo-router";
 import { View, StyleSheet, Text, TextInput, TouchableOpacity, Modal } from "react-native";
 import { useState } from "react";
 import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const sendDatasource = new AuthDatasoruceImp
 
 export function CheckMailView() {
   const { method } = useLocalSearchParams<{ method: 'email' | 'sms' }>();
-  const [email, setEmail] = useState(""); // Estado para almacenar el correo
+  const [email, setEmail] = useState("");
   const [error, setError] = useState('')
   const [modalVisible, setModalVisible] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
   const handsend = async () => {
-    try{
-    const data = await sendDatasource.sendVerification(email, method);
+    try {
+      const data = await sendDatasource.sendVerification(email, method);
 
-    setSuccessMessage("Token de verificación enviado. Por favor, revisa tu bandeja de entrada.");
+      setSuccessMessage("Token de verificación enviado. Por favor, revisa tu bandeja de entrada.");
       setModalVisible(true);
 
       setTimeout(() => {
-        setModalVisible(false); // Cerrar el modal
+        setModalVisible(false);
         router.push(`/auth/newPassword?email=${email}&method=${method}`)
-      }, 10000); // 10 segundos en milisegundos
-    }catch (err) {
+      }, 10000);
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
-      }else{
+      } else {
         setError('Ocurrio un error desconocido')
       }
     }
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>
-          Por favor, verifica tu correo electrónico para confirmar tu cuenta
-        </Text>
+    <GestureHandlerRootView>
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Text style={styles.title}>
+            Por favor, verifica tu correo electrónico para confirmar tu cuenta
+          </Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Correo electrónico"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          placeholderTextColor="#ccc"
-        />
-        {error ? <Text>{error}</Text> : null}
+          <TextInput
+            style={styles.input}
+            placeholder="Correo electrónico"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            placeholderTextColor="#ccc"
+          />
+          {error ? <Text>{error}</Text> : null}
 
-        {/* Enlace modificado para incluir el email y el método en la URL */}
-        <TouchableOpacity style={styles.link} onPress={handsend}>Enviar</TouchableOpacity>
-      </View>
+          <TouchableOpacity onPress={handsend}><Text style={styles.link}>Enviar</Text></TouchableOpacity>
+        </View>
 
-      <Modal
+        <Modal
           animationType="slide"
           transparent={true}
           visible={modalVisible}
@@ -72,7 +73,8 @@ export function CheckMailView() {
             </View>
           </View>
         </Modal>
-    </View>
+      </View>
+    </GestureHandlerRootView>
   );
 }
 

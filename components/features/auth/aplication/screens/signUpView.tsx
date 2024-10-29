@@ -1,7 +1,7 @@
 import { Link, router } from "expo-router";
 import { View, StyleSheet, Text, TextInput, Modal } from "react-native";
 import { useState } from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { GestureHandlerRootView, TouchableOpacity } from "react-native-gesture-handler";
 import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
 
 const registerDataSource = new AuthDatasoruceImp();
@@ -18,101 +18,102 @@ export function SignUpView() {
   const [successMessage, setSuccessMessage] = useState('');
 
   const handleRegister = async () => {
-    try{
+    try {
       const data = await registerDataSource.register(firstName, lastName, password, phone, email)
       console.log("Registro exitoso:", data);
 
-      //quiero un mensaje para informarle al usuario que revise su correo electronico y lo direccione en 10 segundos a login
       setSuccessMessage("Correo electrónico de verificación enviado. Por favor, revisa tu bandeja de entrada.");
       setModalVisible(true);
 
       setTimeout(() => {
-        setModalVisible(false); // Cerrar el modal
-        router.push('/auth/login'); // Redirigir a la pantalla de login
-      }, 10000); // 10 segundos en milisegundos
+        setModalVisible(false);
+        router.push('/auth/login');
+      }, 10000);
 
-    }catch (err) {
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
-      }else{
+      } else {
         setError('Ocurrio un error desconocido')
       }
     }
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>¡Bienvenido! Regístrate</Text>
+    <GestureHandlerRootView>
+      <View style={styles.container}>
+        <View style={styles.card}>
+          <Text style={styles.title}>¡Bienvenido! Regístrate</Text>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu nombre"
-            value={firstName}
-            onChangeText={setFirstName}
-            autoCapitalize="words"
-            placeholderTextColor="#ccc"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu apellido"
-            value={lastName}
-            onChangeText={setLastName}
-            autoCapitalize="words"
-            placeholderTextColor="#ccc"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu teléfono"
-            value={phone}
-            onChangeText={setPhone}
-            keyboardType="phone-pad"
-            placeholderTextColor="#ccc"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Introduce tu correo electrónico"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCapitalize="none"
-            placeholderTextColor="#ccc"
-          />
-          {error ? <Text>{error}</Text> : null}
-        </View>
-
-        <TouchableOpacity onPress={handleRegister} style={styles.link}>Registrarse</TouchableOpacity>
-        
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalBackground}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalText}>{successMessage}</Text>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text style={styles.closeButtonText}>Cerrar</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Introduce tu nombre"
+              value={firstName}
+              onChangeText={setFirstName}
+              autoCapitalize="words"
+              placeholderTextColor="#ccc"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Introduce tu apellido"
+              value={lastName}
+              onChangeText={setLastName}
+              autoCapitalize="words"
+              placeholderTextColor="#ccc"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Introduce tu teléfono"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+              placeholderTextColor="#ccc"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Introduce tu correo electrónico"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              placeholderTextColor="#ccc"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Contraseña"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              placeholderTextColor="#ccc"
+            />
+            {error ? <Text>{error}</Text> : null}
           </View>
-        </Modal>
+
+          <TouchableOpacity onPress={handleRegister}><Text style={styles.link}>Registrarse</Text></TouchableOpacity>
+
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={styles.modalBackground}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalText}>{successMessage}</Text>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.closeButtonText}>Cerrar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </View>
       </View>
-    </View>
+    </GestureHandlerRootView>
   );
 }
 
