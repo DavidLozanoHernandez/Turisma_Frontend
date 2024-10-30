@@ -43,7 +43,7 @@ export function SignUpView() {
     <GestureHandlerRootView>
       <View style={styles.container}>
         <View style={styles.card}>
-          <Text style={styles.title}>¡Bienvenido! Regístrate</Text>
+          <Text style={styles.title}>¡Bienvenido, regístrate!</Text>
 
           <View style={styles.inputContainer}>
             <TextInput
@@ -92,6 +92,8 @@ export function SignUpView() {
           </View>
 
           <TouchableOpacity onPress={handleRegister}><Text style={styles.link}>Registrarse</Text></TouchableOpacity>
+          <Link href="/auth/login" style={styles.link}>¿Ya tienes una cuenta? Inicia sesión</Link>
+
 
           <Modal
             animationType="slide"

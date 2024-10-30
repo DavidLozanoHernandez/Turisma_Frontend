@@ -49,6 +49,8 @@ export function CheckPhoneView() {
         />
 
 <TouchableOpacity onPress={handsend}><Text style={styles.link}>Enviar</Text></TouchableOpacity>
+        <Link href="/auth/newPassword" style={styles.link}>Verificar</Link>
+
 
       </View>
     </View>
