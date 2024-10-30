@@ -25,7 +25,7 @@ export function HomeView() {
                 <View style={styles.dateContainer}>
                     <Image
                         style={styles.calendarIcon}
-                        source={{ uri: "https://img.icons8.com/ios-filled/50/000000/calendar.png" }} // Icono de calendario
+                        source={{ uri: "https://img.icons8.com/fluency-systems-filled/48/FFFFFF/calendar.png" }}
                     />
                     <Text style={styles.date}>12 al 14 de Noviembre 2024 (2 días)</Text>
                 </View>
@@ -39,7 +39,7 @@ export function HomeView() {
                 <Text style={styles.price}>$500 MXN/Persona</Text>
                 <Text style={styles.text}>Viaje redondo</Text>
 
-                {/* <Link href="/excursion" style={styles.link}>Detalles de la excursión</Link> */}
+                <Link href="/excursion" style={styles.link}>Detalles de la excursión</Link>
             </View>
 
         </ScrollView>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         fontWeight: "semibold",
         color: "#fff", // Letras en color blanco
         textAlign: "center",
-        fontFamily: 'cursive', // Fuente cursive para un estilo más elegante
+        fontFamily: 'sans-serif', // Fuente cursive para un estilo más elegante
     },
     card: {
         width: '100%',
