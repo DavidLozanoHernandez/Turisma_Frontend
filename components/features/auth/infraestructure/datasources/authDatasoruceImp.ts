@@ -51,9 +51,9 @@ class AuthDatasoruceImp implements Authsource{
         }
     }
     
-    async sendVerification(email: string, method: string): Promise<any> {
+    async sendVerification(contacto: string, method: string): Promise<any> {
         try{
-            const response = await apiClient.post('auth/send-verification', {email, method})
+            const response = await apiClient.post('auth/send-verification', {contacto, method})
             return response.data
         }catch (error){
             if (axios.isAxiosError(error)) {

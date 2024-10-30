@@ -1,9 +1,36 @@
-import { Link } from "expo-router";
-import { View, StyleSheet, Text, TextInput } from "react-native";
+import { Link, router, useLocalSearchParams } from "expo-router";
+import { View, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 import { useState } from "react";
+import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
+
+const sendDatasource = new AuthDatasoruceImp
 
 export function CheckPhoneView() {
+  const {method} = useLocalSearchParams<{method: 'email' | 'sms'}>();
   const [phone, setPhone] = useState("");
+  const [error, setError] = useState('')
+  const [modalVisible, setModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const handsend = async () => {
+    try {
+      const data = await sendDatasource.sendVerification(phone, method);
+
+      setSuccessMessage("Token de verificación enviado. Por favor, revisa tu bandeja de entrada.");
+      setModalVisible(true);
+
+      setTimeout(() => {
+        setModalVisible(false);
+        router.push(`/auth/newPassword?email=${phone}&method=${method}`)
+      }, 10000);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ocurrio un error desconocido')
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -20,6 +47,10 @@ export function CheckPhoneView() {
           keyboardType="phone-pad"
           placeholderTextColor="#ccc"
         />
+
+<TouchableOpacity onPress={handsend}><Text style={styles.link}>Enviar</Text></TouchableOpacity>
+        <Link href="/auth/newPassword" style={styles.link}>Verificar</Link>
+
 
       </View>
     </View>

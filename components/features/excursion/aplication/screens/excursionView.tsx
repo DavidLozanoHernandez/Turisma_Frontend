@@ -17,7 +17,6 @@ export function ExcursionView() {
     }, [user]);
 
     
-
     return (
         <View style = {styles.container}>
             <Text style={styles.subtitle}>Actividades a realizar en el viaje</Text>
