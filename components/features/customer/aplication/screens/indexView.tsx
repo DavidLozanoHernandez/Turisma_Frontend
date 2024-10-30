@@ -2,12 +2,44 @@ import { useContext, useEffect, useState } from "react";
 import { Button, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { AuthContext } from "../../../auth/aplication/providers/authProvider";
 import { useRouter } from "expo-router";
+import AuthDatasoruceImp from "@/components/features/auth/infraestructure/datasources/authDatasoruceImp";
+
+const userGet = new AuthDatasoruceImp
 
 export function CustomerView() {
     const authContext = useContext(AuthContext);
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
-    const [phoneNumber, setPhoneNumber] = useState('');
+    const [userData, SetuserData] = useState({ name: '', lastName: '', phoneNumber: '', email: '', photo: '' });
+    const [error, setError] = useState('');
+
+    const token = authContext?.userToken
+
+    useEffect(() => {
+        const handlegetUser = async () => {
+            if (token) {
+                try {
+                    const data = await userGet.getUser(token);
+                    console.log(data)
+                    SetuserData({
+                        name: data.name,
+                        lastName: data.lastName,
+                        phoneNumber: data.phone,
+                        email: data.email,
+                        photo: data.userPhoto
+                    });
+                }
+                catch (err) {
+                    if (err instanceof Error) {
+                        setError(err.message);
+                    } else {
+                        setError('Ocurrió un error desconocido');
+                    }
+                }
+            }
+        };
+        handlegetUser();
+    }, [token]);
 
     if(!authContext){
         return(
@@ -18,10 +50,6 @@ export function CustomerView() {
     }
 
     const { user } = authContext;
-    const { userToken } = authContext;
-    console.log(user?.id)
-    console.log(userToken)
-
     useEffect(() => {
         if (!user) {
             router.replace('/auth/login');
@@ -32,15 +60,19 @@ export function CustomerView() {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.contenedor}>
                 <Image
-                    source={{ uri: "https://th.bing.com/th/id/OIP.Crq9sn3Qu3HyHwPJi2zW8QHaHa?rs=1&pid=ImgDetMain" }}
+                    source={{ uri: userData.photo} }
                     style={styles.imagen}
                 />
                 <View style={styles.inputContainer}>
                     <Text style={styles.text}>Nombre:</Text>
-                    <TextInput style={styles.input} placeholder="Nombre" placeholderTextColor={"rgba(255, 255, 255, 0.20)"} />
+                    <TextInput style={styles.input} placeholder="Nombre" placeholderTextColor={"rgba(255, 255, 255, 0.20)"} 
+                    value={userData.name}
+                    />
 
                     <Text style={styles.text}>Apellido:</Text>
-                    <TextInput style={styles.input} placeholder="Apellido" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}/>
+                    <TextInput style={styles.input} placeholder="Apellido" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
+                    value={userData.lastName}
+                    />
 
                     <Text style={styles.text}>Número telefónico:</Text>
                     <TextInput 
@@ -48,12 +80,14 @@ export function CustomerView() {
                         placeholder="Teléfono" 
                         keyboardType="phone-pad" 
                         placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
-                        value={phoneNumber}
+                        value={userData.phoneNumber}
                         onFocus={() => setModalVisible(true)}
                     />
 
                     <Text style={styles.text}>Correo electrónico:</Text>
-                    <TextInput editable={false} style={styles.input} placeholder="Correo electrónico" keyboardType="email-address" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}/>
+                    <TextInput editable={false} style={styles.input} placeholder="Correo electrónico" keyboardType="email-address" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
+                    value={userData.email}
+                    />
                     
                     <TouchableOpacity style = {styles.button}>
                         <Text>Cambiar Contraseña</Text>

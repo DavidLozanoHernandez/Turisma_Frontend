@@ -80,6 +80,25 @@ class AuthDatasoruceImp implements Authsource{
             }
         }
     }
+
+    async getUser(token: string): Promise<any> {
+        try{
+            const response = await apiClient.get('auth/getuser',{
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            return response.data
+        }catch (error){
+            if (axios.isAxiosError(error)) {
+                throw new Error(error.response?.data?.message || 'Fallo en el registro');
+            } else if (error instanceof Error) {
+                throw new Error(error.message);
+            } else {
+                throw new Error('Ocurrió un error desconocido');
+            }
+        }
+    }
 }
 
 export default AuthDatasoruceImp;
