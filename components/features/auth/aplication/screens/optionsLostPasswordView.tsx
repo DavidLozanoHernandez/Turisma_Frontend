@@ -4,13 +4,11 @@ import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
 export function OptionslostPasswordView() {
   const router = useRouter(); // Hook de Expo Router
 
-  // Función para manejar la navegación
   const handleOptionPress = (method: 'email' | 'sms') => {
-    // Usa un formato de query string para pasar los parámetros
     if (method === 'email') {
-      router.push(`/auth/checkMail?method=${method}`);  // Enviando el parámetro 'method'
+      router.push(`/auth/checkMail?method=${method}`);
     } else if (method === 'sms') {
-      router.push(`/auth/checkPhone?method=${method}`);  // Enviando el parámetro 'method'
+      router.push(`/auth/checkPhone?method=${method}`);
     }
   };
 
@@ -21,7 +19,6 @@ export function OptionslostPasswordView() {
           Elige la opción para restablecer tu contraseña
         </Text>
 
-        {/* Botón para Email */}
         <TouchableOpacity
           style={styles.link}
           onPress={() => handleOptionPress('email')}
@@ -29,7 +26,6 @@ export function OptionslostPasswordView() {
           <Text style={styles.linkText}>Email</Text>
         </TouchableOpacity>
 
-        {/* Botón para Teléfono */}
         <TouchableOpacity
           style={styles.link}
           onPress={() => handleOptionPress('sms')}

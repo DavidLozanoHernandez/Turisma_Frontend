@@ -35,12 +35,12 @@ class AuthDatasoruceImp implements Authsource{
 
     async register(name: string, lastName: string, password: string, phone: string, email: string): Promise<any> {
         try {
-            console.log("Datos de registro:", { name, lastName, password, phone, email }); // Para verificar los datos
+            console.log("Datos de registro:", { name, lastName, password, phone, email });
             const response = await apiClient.post('auth/register', { name, email, password, lastName, phone });
-            console.log("Respuesta del registro:", response); // Verificar la respuesta
+            console.log("Respuesta del registro:", response);
             return response.data;
         } catch (error) {
-            console.error("Error en registro:", error); // Verificar el error
+            console.error("Error en registro:", error);
             if (axios.isAxiosError(error)) {
                 throw new Error(error.response?.data?.message || 'Fallo en el registro');
             } else if (error instanceof Error) {
@@ -51,9 +51,9 @@ class AuthDatasoruceImp implements Authsource{
         }
     }
     
-    async sendVerification(email: string, method: string): Promise<any> {
+    async sendVerification(contacto: string, method: string): Promise<any> {
         try{
-            const response = await apiClient.post('auth/send-verification', {email, method})
+            const response = await apiClient.post('auth/send-verification', {contacto, method})
             return response.data
         }catch (error){
             if (axios.isAxiosError(error)) {
