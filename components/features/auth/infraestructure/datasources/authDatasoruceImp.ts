@@ -7,7 +7,7 @@ class AuthDatasoruceImp implements Authsource{
     async login(username: string, password: string): Promise<any> {
         console.log(username, password)
         try{
-            const response = await apiClient.post('/auth/login', {username, password});
+            const response = await apiClient.post('auth/login', {username, password});
             console.log(response)
             const user = new User(
                 response.data.user.id,
@@ -98,6 +98,34 @@ class AuthDatasoruceImp implements Authsource{
                 throw new Error('Ocurrió un error desconocido');
             }
         }
+    }
+
+    async uploadUserPhoto(token: string, photoUri: string): Promise<any> {
+        const formData = new FormData();
+    
+    formData.append('file', {
+        uri: photoUri,
+        name: 'photo.jpg',
+        type: 'image/jpeg',
+    } as any);
+
+    try {
+        const response = await apiClient.post('photos/upload', formData, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new Error(error.response?.data?.message || 'Error al subir la foto');
+        } else if (error instanceof Error) {
+            throw new Error(error.message);
+        } else {
+            throw new Error('Ocurrió un error desconocido');
+        }
+    }
     }
 }
 

@@ -3,6 +3,7 @@ import { Button, Image, Modal, ScrollView, StyleSheet, Text, TextInput, Touchabl
 import { AuthContext } from "../../../auth/aplication/providers/authProvider";
 import { useRouter } from "expo-router";
 import AuthDatasoruceImp from "@/components/features/auth/infraestructure/datasources/authDatasoruceImp";
+import * as ImagePicker from 'expo-image-picker';
 
 const userGet = new AuthDatasoruceImp
 
@@ -15,41 +16,77 @@ export function CustomerView() {
 
     const token = authContext?.userToken
 
-    useEffect(() => {
-        const handlegetUser = async () => {
-            if (token) {
-                try {
-                    const data = await userGet.getUser(token);
-                    console.log(data)
-                    SetuserData({
-                        name: data.name,
-                        lastName: data.lastName,
-                        phoneNumber: data.phone,
-                        email: data.email,
-                        photo: data.userPhoto
-                    });
-                }
-                catch (err) {
-                    if (err instanceof Error) {
-                        setError(err.message);
-                    } else {
-                        setError('Ocurrió un error desconocido');
-                    }
+    const handlegetUser = async () => {
+        if (token) {
+            try {
+                const data = await userGet.getUser(token);
+                console.log(data);
+                SetuserData({
+                    name: data.name,
+                    lastName: data.lastName,
+                    phoneNumber: data.phone,
+                    email: data.email,
+                    photo: data.userPhoto,
+                });
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('Ocurrió un error desconocido');
                 }
             }
-        };
+        }
+    };
+    useEffect(() => {
         handlegetUser();
     }, [token]);
 
-    if(!authContext){
-        return(
-            <View>
-                <Text>Error</Text>
-            </View>
-        )
+    const pickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert("Se necesitan permisos para acceder a la galería.");
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const uri = result.assets[0].uri;
+            uploadImage(uri);
+        }
+    };
+
+    const uploadImage = async (uri: string) => {
+        if (token) {
+            try {
+                const result = await userGet.uploadUserPhoto(token, uri);
+                SetuserData(prev => ({ ...prev, photo: result.secure_url }));
+                await handlegetUser();
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('Ocurrió un error desconocido');
+                }
+            }
+        }
+    };
+
+    const handleLogout = async () => {
+        if (authContext) {
+            await authContext.logout()
+            router.replace('/auth/login')
+        }
     }
 
-    const { user } = authContext;
+    const user = authContext?.user;
+
     useEffect(() => {
         if (!user) {
             router.replace('/auth/login');
@@ -59,26 +96,28 @@ export function CustomerView() {
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.contenedor}>
-                <Image
-                    source={{ uri: userData.photo} }
-                    style={styles.imagen}
-                />
+                <TouchableOpacity onPress={pickImage}>
+                    <Image
+                        source={{ uri: userData.photo }}
+                        style={styles.imagen}
+                    />
+                </TouchableOpacity>
                 <View style={styles.inputContainer}>
                     <Text style={styles.text}>Nombre:</Text>
-                    <TextInput style={styles.input} placeholder="Nombre" placeholderTextColor={"rgba(255, 255, 255, 0.20)"} 
-                    value={userData.name}
+                    <TextInput style={styles.input} placeholder="Nombre" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
+                        value={userData.name}
                     />
 
                     <Text style={styles.text}>Apellido:</Text>
                     <TextInput style={styles.input} placeholder="Apellido" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
-                    value={userData.lastName}
+                        value={userData.lastName}
                     />
 
                     <Text style={styles.text}>Número telefónico:</Text>
-                    <TextInput 
-                        style={styles.input} 
-                        placeholder="Teléfono" 
-                        keyboardType="phone-pad" 
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Teléfono"
+                        keyboardType="phone-pad"
                         placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
                         value={userData.phoneNumber}
                         onFocus={() => setModalVisible(true)}
@@ -86,11 +125,15 @@ export function CustomerView() {
 
                     <Text style={styles.text}>Correo electrónico:</Text>
                     <TextInput editable={false} style={styles.input} placeholder="Correo electrónico" keyboardType="email-address" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
-                    value={userData.email}
+                        value={userData.email}
                     />
-                    
-                    <TouchableOpacity style = {styles.button}>
+
+                    <TouchableOpacity style={styles.button}>
                         <Text>Cambiar Contraseña</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.button} onPress={handleLogout}>
+                        <Text>Cerrar sesión</Text>
                     </TouchableOpacity>
                 </View>
             </View>
