@@ -6,21 +6,29 @@ import AuthDatasoruceImp from "@/components/features/auth/infraestructure/dataso
 import * as ImagePicker from 'expo-image-picker';
 
 const userGet = new AuthDatasoruceImp
+type ModalType = 'phone' | 'info' | 'alert' | 'password' | null;
 
 export function CustomerView() {
     const authContext = useContext(AuthContext);
     const router = useRouter();
-    const [modalVisible, setModalVisible] = useState(false);
+    const [activeModal, setActiveModal] = useState<ModalType>(null);
     const [userData, SetuserData] = useState({ name: '', lastName: '', phoneNumber: '', email: '', photo: '' });
     const [error, setError] = useState('');
-
     const token = authContext?.userToken
+    const [newPhone, setNewPhone] = useState('')
+    const [tokenV, setTokenV] = useState('')
+    const [area, setArea] = useState('+52')
+    const [showAlert, setShowAlert] = useState(false);
+    const [password, setPassword] = useState('');
+
+    //console.log(authContext)
+    console.log(token)
 
     const handlegetUser = async () => {
         if (token) {
             try {
                 const data = await userGet.getUser(token);
-                console.log(data);
+                //console.log(data);
                 SetuserData({
                     name: data.name,
                     lastName: data.lastName,
@@ -42,9 +50,9 @@ export function CustomerView() {
     }, [token]);
 
     const pickImage = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        const data = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-        if (permissionResult.granted === false) {
+        if (data.granted === false) {
             alert("Se necesitan permisos para acceder a la galería.");
             return;
         }
@@ -65,8 +73,8 @@ export function CustomerView() {
     const uploadImage = async (uri: string) => {
         if (token) {
             try {
-                const result = await userGet.uploadUserPhoto(token, uri);
-                SetuserData(prev => ({ ...prev, photo: result.secure_url }));
+                const data = await userGet.uploadUserPhoto(token, uri);
+                SetuserData(prev => ({ ...prev, photo: data.secure_url }));
                 await handlegetUser();
             } catch (err) {
                 if (err instanceof Error) {
@@ -77,6 +85,115 @@ export function CustomerView() {
             }
         }
     };
+
+    const handleupdate = async () => {
+        if (token) {
+            try {
+                const data = await userGet.updatedates(token, userData.name, userData.lastName)
+                await handlegetUser();
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('Ocurrió un error desconocido');
+                }
+            }
+        }
+    }
+
+    const handlesendVerificationPhone = async () => {
+        if (token) {
+            try {
+                const data = await userGet.sendVerificationPhone(token);
+                openModal('phone')
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('Ocurrió un error desconocido');
+                }
+            }
+        }
+    }
+
+    const handleUpdatePhone = async () => {
+        if (token) {
+            try {
+                const fullphone = area + newPhone;
+                const data = await userGet.updatePhone(token, fullphone, tokenV)
+                openModal('alert')
+                await handlegetUser();
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('Ocurrió un error desconocido');
+                }
+            }
+        }
+    }
+
+    const handleSendVerificationPassword = async () => {
+        if (token) {
+            try {
+                const data = await userGet.sendVerificationPassword(token)       
+                openModal('password')         
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('Ocurrió un error desconocido');
+                }
+            }
+        }
+    }
+
+    const handleupdatePassword = async () => {
+        if (token){
+            console.log("hola")
+            try {
+                const data = await userGet.updatePassword(token, password, tokenV)
+                openModal('alert')
+                await handlegetUser();
+            } catch (err) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError('Ocurrió un error desconocido');
+                }
+            }
+        }
+    }
+
+    const openModal = (modalType: ModalType) => {
+        setActiveModal(modalType);
+        if (modalType === 'phone') {
+            setNewPhone('');
+            setTokenV('');
+        }
+        if (modalType === 'alert') {
+            setShowAlert(true);
+        }
+        if (modalType === 'password'){
+            setPassword('');
+            setTokenV('');
+        }
+    };
+
+    const closeModal = () => {
+        setActiveModal(null);
+        setShowAlert(false);
+    };
+
+    useEffect(() => {
+        if (activeModal === 'alert') {
+            const timer = setTimeout(() => {
+                closeModal();
+            }, 3000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [activeModal]);
 
     const handleLogout = async () => {
         if (authContext) {
@@ -106,11 +223,15 @@ export function CustomerView() {
                     <Text style={styles.text}>Nombre:</Text>
                     <TextInput style={styles.input} placeholder="Nombre" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
                         value={userData.name}
+                        onChangeText={(text) => SetuserData(prev => ({ ...prev, name: text }))}
+                        onSubmitEditing={handleupdate}
                     />
 
                     <Text style={styles.text}>Apellido:</Text>
                     <TextInput style={styles.input} placeholder="Apellido" placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
                         value={userData.lastName}
+                        onChangeText={(text) => SetuserData(prev => ({ ...prev, lastName: text }))}
+                        onSubmitEditing={handleupdate}
                     />
 
                     <Text style={styles.text}>Número telefónico:</Text>
@@ -120,7 +241,7 @@ export function CustomerView() {
                         keyboardType="phone-pad"
                         placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
                         value={userData.phoneNumber}
-                        onFocus={() => setModalVisible(true)}
+                        onFocus={() => openModal('info')}
                     />
 
                     <Text style={styles.text}>Correo electrónico:</Text>
@@ -128,11 +249,11 @@ export function CustomerView() {
                         value={userData.email}
                     />
 
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={handleSendVerificationPassword}>
                         <Text>Cambiar Contraseña</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.button} onPress={handleLogout}>
+                    <TouchableOpacity style={styles.buttonExit} onPress={handleLogout}>
                         <Text>Cerrar sesión</Text>
                     </TouchableOpacity>
                 </View>
@@ -141,19 +262,131 @@ export function CustomerView() {
             <Modal
                 animationType="slide"
                 transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
+                visible={activeModal === 'info'}
+                onRequestClose={closeModal}
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Cambiar Número Telefónico</Text>
-                        <Text style={styles.modalText}>Aquí puedes cambiar tu número telefónico.</Text>
-                        <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
-                            <Text style={styles.closeText}>Cerrar</Text>
-                        </TouchableOpacity>
+                        <Text style={styles.modalText}>
+                            Estas seguro que quieres cambiar tu numero telefónico. {'\n'}
+                            Si estás de acuerdo presiona "Cambiar" y se te enviará un código de verificación a tu Correo electrónico. {'\n'}
+                            En caso contrario presiona "Cancelar".
+                        </Text>
+                        <View style={styles.modal}>
+                            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                                <Text style={styles.closeText}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.closeButton} onPress={handlesendVerificationPhone}>
+                                <Text style={styles.closeText}>Cambiar</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={activeModal === 'phone'}
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Cambiar Número Telefónico</Text>
+                        <Text style={styles.textAlignLeft}>Token:</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Ingresa el Token"
+                            placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
+                            value={tokenV}
+                            onChangeText={setTokenV}
+                        />
+
+                        <Text style={styles.textAlignLeft}>Número telefónico:</Text>
+                        <View style={styles.phoneInputContainer}>
+                            <TextInput
+                                style={[styles.input, styles.prefixInput]}
+                                value={area}
+                                editable={false}
+                            />
+                            <TextInput
+                                style={[styles.input, styles.inputmodal]}
+                                placeholder="Ingresa tu número"
+                                keyboardType="phone-pad"
+                                placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
+                                value={newPhone}
+                                onChangeText={setNewPhone}
+                            />
+                        </View>
+
+                        <View style={styles.modal}>
+                            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                                <Text style={styles.closeText}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.closeButton} onPress={handleUpdatePhone}>
+                                <Text style={styles.closeText}>Confirmar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={activeModal === 'alert'}
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Se actualizo con exito.</Text>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={activeModal === 'password'}
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Cambiar Contraseña</Text>
+                        <Text style={styles.textAlignLeft}>Token:</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Ingresa el Token"
+                            placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
+                            value={tokenV}
+                            onChangeText={setTokenV}
+                        />
+
+                        <Text style={styles.textAlignLeft}>Nueva Contraseña:</Text>
+                        <View style={styles.phoneInputContainer}>
+                            <TextInput
+                                style={[styles.input, styles.inputmodal]}
+                                placeholder="Ingresa tu nueva contraseña"
+                                placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
+                                value={password}
+                                onChangeText={setPassword}
+                            />
+                        </View>
+                        {error ? <Text>{error}</Text>: null}
+
+                        <View style={styles.modal}>
+                            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
+                                <Text style={styles.closeText}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.closeButton} onPress={handleupdatePassword}>
+                                <Text style={styles.closeText}>Confirmar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
         </ScrollView>
     );
 }
@@ -210,16 +443,24 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         width: '80%',
         alignItems: 'center',
+        marginBottom: 10
+    },
+    buttonExit: {
+        backgroundColor: '#FF0000',
+        padding: 10,
+        borderRadius: 5,
+        width: '80%',
+        alignItems: 'center',
     },
     modalContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
     },
     modalContent: {
         width: '80%',
-        backgroundColor: 'white',
+        backgroundColor: '#0f0c30',
         borderRadius: 10,
         padding: 20,
         alignItems: 'center',
@@ -228,17 +469,56 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 10,
         fontWeight: 'bold',
+        color: '#fff',
     },
     modalText: {
         marginBottom: 20,
+        color: '#fff',
     },
     closeButton: {
-        backgroundColor: '#007BFF',
+        backgroundColor: '#28A745',
         padding: 10,
         borderRadius: 5,
+        marginHorizontal: 10,
     },
     closeText: {
         color: '#FFFFFF',
         fontSize: 16,
     },
+    modal: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        padding: 10,
+    },
+    textAlignLeft: {
+        textAlign: 'left',
+        width: '100%',
+        fontSize: 20,
+        fontWeight: "bold",
+        color: '#fff',
+        marginBottom: 5,
+    },
+    phoneInputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+    },
+    prefixInput: {
+        width: "20%",
+        marginRight: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        color: '#fff',
+    },
+    inputmodal: {
+        flex: 1,
+        height: 40,
+        borderWidth: 1,
+        borderRadius: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        marginBottom: 10,
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+        color: '#fff',
+    },
+
 });

@@ -3,11 +3,11 @@ import apiClient from "../../../../config/apiClient";
 import Authsource from "../../domain/dataresources/authsource";
 import { User } from "../../domain/entities/auth";
 
-class AuthDatasoruceImp implements Authsource{
+class AuthDatasoruceImp implements Authsource {
     async login(username: string, password: string): Promise<any> {
         console.log(username, password)
-        try{
-            const response = await apiClient.post('auth/login', {username, password});
+        try {
+            const response = await apiClient.post('auth/login', { username, password });
             console.log(response)
             const user = new User(
                 response.data.user.id,
@@ -22,7 +22,7 @@ class AuthDatasoruceImp implements Authsource{
                 accessToken: response.data.access_token,
                 user: user,
             }
-        }catch (error){
+        } catch (error) {
             if (axios.isAxiosError(error)) {
                 throw new Error(error.response?.data?.message || 'Fallo en el login');
             } else if (error instanceof Error) {
@@ -50,12 +50,12 @@ class AuthDatasoruceImp implements Authsource{
             }
         }
     }
-    
+
     async sendVerification(contacto: string, method: string): Promise<any> {
-        try{
-            const response = await apiClient.post('auth/send-verification', {contacto, method})
+        try {
+            const response = await apiClient.post('auth/send-verification', { contacto, method })
             return response.data
-        }catch (error){
+        } catch (error) {
             if (axios.isAxiosError(error)) {
                 throw new Error(error.response?.data?.message || 'Fallo en el registro');
             } else if (error instanceof Error) {
@@ -67,10 +67,10 @@ class AuthDatasoruceImp implements Authsource{
     }
 
     async changepassword(email: string, newPassword: string, token: string): Promise<any> {
-        try{
-            const response = await apiClient.patch('auth/change-password', {email, newPassword, token})
+        try {
+            const response = await apiClient.patch('auth/change-password', { email, newPassword, token })
             return response.data
-        }catch (error){
+        } catch (error) {
             if (axios.isAxiosError(error)) {
                 throw new Error(error.response?.data?.message || 'Fallo en el registro');
             } else if (error instanceof Error) {
@@ -82,14 +82,14 @@ class AuthDatasoruceImp implements Authsource{
     }
 
     async getUser(token: string): Promise<any> {
-        try{
-            const response = await apiClient.get('auth/getuser',{
+        try {
+            const response = await apiClient.get('auth/getuser', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             })
             return response.data
-        }catch (error){
+        } catch (error) {
             if (axios.isAxiosError(error)) {
                 throw new Error(error.response?.data?.message || 'Fallo en el registro');
             } else if (error instanceof Error) {
@@ -102,30 +102,125 @@ class AuthDatasoruceImp implements Authsource{
 
     async uploadUserPhoto(token: string, photoUri: string): Promise<any> {
         const formData = new FormData();
-    
-    formData.append('file', {
-        uri: photoUri,
-        name: 'photo.jpg',
-        type: 'image/jpeg',
-    } as any);
 
-    try {
-        const response = await apiClient.post('photos/upload', formData, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error)) {
-            throw new Error(error.response?.data?.message || 'Error al subir la foto');
-        } else if (error instanceof Error) {
-            throw new Error(error.message);
-        } else {
-            throw new Error('Ocurrió un error desconocido');
+        formData.append('file', {
+            uri: photoUri,
+            name: 'photo.jpg',
+            type: 'image/jpeg',
+        } as any);
+
+        try {
+            const response = await apiClient.post('photos/upload', formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            return response.data;
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new Error(error.response?.data?.message || 'Error al subir la foto');
+            } else if (error instanceof Error) {
+                throw new Error(error.message);
+            } else {
+                throw new Error('Ocurrió un error desconocido');
+            }
         }
     }
+
+    async updatedates(token: string, name: string, lastName: string): Promise<any> {
+        try {
+            const response = await apiClient.patch('auth/update', {name, lastName}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            return response.data
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new Error(error.response?.data?.message || 'Error al subir la foto');
+            } else if (error instanceof Error) {
+                throw new Error(error.message);
+            } else {
+                throw new Error('Ocurrió un error desconocido');
+            }
+        }
+    }
+
+    async sendVerificationPhone(token: string): Promise<any> {
+        try {
+            const response = await apiClient.post('auth/send-verification-Phone', {}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            })
+            return response.data
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new Error(error.response?.data?.message || 'Error al subir la foto');
+            } else if (error instanceof Error) {
+                throw new Error(error.message);
+            } else {
+                throw new Error('Ocurrió un error desconocido');
+            }
+        }
+    }
+
+    async updatePhone(token_acces: string, newPhone: string, token: string): Promise<any> {
+        try {
+            const response = await apiClient.patch('auth/update-phone', {newPhone, token}, {
+                headers: {
+                    'Authorization': `Bearer ${token_acces}`,
+                }
+            })
+            return response.data
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new Error(error.response?.data?.message || 'Error al subir la foto');
+            } else if (error instanceof Error) {
+                throw new Error(error.message);
+            } else {
+                throw new Error('Ocurrió un error desconocido');
+            }
+        }
+    }
+
+    async sendVerificationPassword(token: string): Promise<any> {
+        try {
+            const response = await apiClient.post('auth/send-verification-recovery',{}, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                }
+            })
+            return response.data
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new Error(error.response?.data?.message || 'Error al subir la foto');
+            } else if (error instanceof Error) {
+                throw new Error(error.message);
+            } else {
+                throw new Error('Ocurrió un error desconocido');
+            }
+        }
+    }
+
+    async updatePassword(token_acces: string, newPassword: string, token: string): Promise<any> {
+        try {
+            const response = await apiClient.patch('auth/password-recovery', {newPassword, token}, {
+                headers: {
+                    'Authorization': `Bearer ${token_acces}`,
+                }
+            })
+            return response.data
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                throw new Error(error.response?.data?.message || 'Error al subir la foto');
+            } else if (error instanceof Error) {
+                throw new Error(error.message);
+            } else {
+                throw new Error('Ocurrió un error desconocido');
+            }
+        }
     }
 }
 
