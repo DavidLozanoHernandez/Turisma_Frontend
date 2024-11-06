@@ -1,82 +1,88 @@
 import { Link, useRouter } from "expo-router";
 import { useContext, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { AuthContext } from "../../../auth/aplication/providers/authProvider";
 
 export function ExcursionView() {
     const authContext = useContext(AuthContext);
     const router = useRouter();
-    console.log(authContext?.user)
-
     const user = authContext?.user;
-
+    
     useEffect(() => {
         if (!user) {
             router.replace('/auth/login');
         }
     }, [user]);
 
-    
     return (
-        <View style = {styles.container}>
-            <Text style={styles.subtitle}>Actividades a realizar en el viaje</Text>
-            <View style={styles.imagePlaceholder}>
-                <Text style={styles.imageText}>Imágenes de las actividades</Text>
-            </View>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+            <View style={styles.container}>
+                <Text style={styles.title}>Detalles de la excursión a:</Text>
+                <Text style={styles.excursionName}>Zacatlán, Puebla</Text>
 
-            <Text style={styles.subtitle}>Tipo de transporte</Text>
-            <View style={styles.imagePlaceholder}>
-                <Text style={styles.imageText}>Imagen del transporte</Text>
-            </View>
+                <Text style={styles.subtitle}>Actividades a realizar en el viaje:</Text>
+                <View style={styles.listContainer}>
+                    <Text style={styles.listItem}>• Salida al zócalo</Text>
+                    <Text style={styles.listItem}>• Caminata por el centro</Text>
+                    <Text style={styles.listItem}>• Visita al mirador</Text>
+                </View>
 
-            <Text style={styles.subtitle}>Paradas que se van a realizar</Text>
-            <View style={styles.imagePlaceholder}>
-                <Text style={styles.imageText}>Imagen de las paradas</Text>
-            </View>
+                <Text style={styles.subtitle}>Tipo de transporte:</Text>
+                <Text style={styles.subtitle}>Combi</Text>
 
-            <Link href={"/reservation/makeReservation"} style={styles.link}>
-                <Text>Realizar reserva</Text>
-            </Link>
-        </View>
+                <Text style={styles.subtitle}>Paradas que se van a realizar:</Text>
+                <View style={styles.listContainer}>
+                    <Text style={styles.listItem}>• Cascadas</Text>
+                    <Text style={styles.listItem}>• Mirador de Zacatlán</Text>
+                </View>
+
+                <Link href={"/reservation/makeReservation"} style={styles.link}>
+                    <Text>Realizar reserva</Text>
+                </Link>
+            </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
+    scrollContainer: {
+        flexGrow: 1,
+    },
     container: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
         backgroundColor: '#0f0c29',
-    },
-    card: {
-        width: '100%',
-        maxWidth: 400,
-        padding: 40,
-        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-        borderRadius: 15,
-        shadowColor: "#036",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
     },
     title: {
         fontSize: 20,
         fontWeight: "bold",
         color: '#fff',
+        marginTop: 30,
         marginBottom: 20,
         textAlign: 'center',
     },
+    excursionName: {
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#fff",
+        marginBottom: 30,
+        textAlign: "center",
+    },
     subtitle: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: "semibold",
         color: '#fff',
         marginBottom: 10,
         textAlign: 'center',
+    },
+    listContainer: {
+        marginBottom: 20,
+    },
+    listItem: {
+        fontSize: 16,
+        color: '#fff',
+        marginBottom: 5,
     },
     imagePlaceholder: {
         width: '100%',
