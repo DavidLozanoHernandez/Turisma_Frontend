@@ -1,39 +1,66 @@
-import { Text, View, FlatList, StyleSheet } from "react-native";
+import { Text, View, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import { useState } from "react";
 
+// Definir el tipo de status
+type ReservationStatus = "Pendiente" | "Completa" | "Cancelada";
+
+// Definir el tipo para cada reservación
+interface Reservation {
+  id: string;
+  excursion: string;
+  date: string;
+  status: ReservationStatus;
+}
+
 export function ReservationView() {
-  // Simulación de reservaciones
-  const [reservations, setReservations] = useState([
-    { id: '1', excursion: 'Excursión a la montaña', activities: 'Caminata', transport: "Autobus" },
-    { id: '2', excursion: 'Excursión al lago', activities: 'Paseo en lancha', transport: "Autobus" },
-    { id: '3', excursion: 'Excursión a la ciudad', activities: 'Tour por el parque del centro', transport: "Combi" },
+  // Simulación de reservaciones con tipo definido
+  const [reservations, setReservations] = useState<Reservation[]>([
+    { id: '1', excursion: 'Zacatlán, Puebla', date: '12 al 14 de Noviembre 2024', status: "Pendiente" },
+    { id: '2', excursion: 'Excursión al lago', date: '20 al 22 de Octubre 2024', status: "Completa" },
+    { id: '3', excursion: 'Excursión a la ciudad', date: '30 al 2 de Diciembre 2024', status: "Cancelada" },
   ]);
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tus reservaciones</Text>
+  // Función para obtener color del estatus
+  const getStatusColor = (status: ReservationStatus) => {
+    switch (status) {
+      case "Pendiente":
+        return "#FFD700"; // Amarillo dorado
+      case "Completa":
+        return "#32CD32"; // Verde lima
+      case "Cancelada":
+        return "#FF6347"; // Rojo tomate
+      default:
+        return "#ccc"; // Gris claro
+    }
+  };
 
-      {/* Lista de reservaciones */}
-      <FlatList
-        data={reservations}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.reservationCard}>
-            <Text style={styles.excursion}>{item.excursion}</Text>
-            <Text style={styles.activities}>Actividades: {item.activities}</Text>
-            <Text style={styles.transport}>Transporte: {item.transport}</Text>
+  return (
+    <FlatList
+      data={reservations}
+      keyExtractor={(item) => item.id}
+      ListHeaderComponent={
+        <Text style={styles.title}>Tus reservaciones</Text>
+      }
+      renderItem={({ item }) => (
+        <TouchableOpacity style={styles.reservationCard} onPress={() => console.log(`Reservación ${item.id} seleccionada`)}>
+          <Text style={styles.excursion}>{item.excursion}</Text>
+          <Text style={styles.date}>Fecha: {item.date}</Text>
+          <View style={styles.statusContainer}>
+            <Text style={styles.statusLabel}>Estatus: </Text>
+            <Text style={[styles.statusValue, { color: getStatusColor(item.status) }]}>{item.status}</Text>
           </View>
-        )}
-      />
-    </View>
+        </TouchableOpacity>
+      )}
+      contentContainerStyle={styles.container}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
     backgroundColor: '#0f0c29',
+    flexGrow: 1,
   },
   title: {
     fontSize: 24,
@@ -53,14 +80,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
-  activities: {
+  date: {
     fontSize: 16,
     color: '#ccc',
     marginTop: 5,
   },
-  transport: {
-    fontSize: 16,
-    color: '#ccc',
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 5,
+  },
+  statusLabel: {
+    fontSize: 16,
+    color: '#fff', // Color blanco para la etiqueta "Estatus:"
+  },
+  statusValue: {
+    fontSize: 16,
+    fontWeight: 'bold', // Color dinámico para el valor del estatus
   },
 });
