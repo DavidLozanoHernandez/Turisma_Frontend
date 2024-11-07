@@ -250,11 +250,11 @@ export function CustomerView() {
                     />
 
                     <TouchableOpacity style={styles.button} onPress={handleSendVerificationPassword}>
-                        <Text>Cambiar Contraseña</Text>
+                        <Text style={styles.buttonText}>Cambiar Contraseña</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.buttonExit} onPress={handleLogout}>
-                        <Text>Cerrar sesión</Text>
+                        <Text style={styles.buttonText}>Cerrar sesión</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -399,6 +399,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#0f0c29",
     },
     contenedor: {
+        marginTop: 50,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -406,8 +407,8 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "rgba(255, 255, 255, 0.10)",
         borderRadius: 20,
-        width: "80%",
-        height: "80%",
+        width: "90%",
+        height: "90%",
     },
     imagen: {
         width: 150,
@@ -438,19 +439,29 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     button: {
+        marginTop: 20,
+        marginBottom: 10,
         backgroundColor: '#28A745',
-        padding: 10,
-        borderRadius: 5,
-        width: '80%',
-        alignItems: 'center',
-        marginBottom: 10
+        paddingVertical: 8,
+        paddingHorizontal: 20,
+        borderRadius: 7,
+        alignSelf: 'center',
+        width: '90%',
     },
     buttonExit: {
-        backgroundColor: '#FF0000',
-        padding: 10,
-        borderRadius: 5,
-        width: '80%',
-        alignItems: 'center',
+        fontSize: 16,
+        marginBottom: 10,
+        backgroundColor: '#ce0000',
+        paddingVertical: 8,
+        paddingHorizontal: 20,
+        borderRadius: 7,
+        alignSelf: 'center',
+        width: '90%',
+    },
+    buttonText: {
+        fontSize: 16,
+        color: '#fff',
+        textAlign: 'center',
     },
     modalContainer: {
         flex: 1,
