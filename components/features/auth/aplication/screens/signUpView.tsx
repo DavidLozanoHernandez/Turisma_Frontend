@@ -10,7 +10,8 @@ export function SignUpView() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  //const [confirmPassword, setConfirmPassword] = useState('');
+  const [area, setArea] = useState('+52');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('')
@@ -62,14 +63,21 @@ export function SignUpView() {
               autoCapitalize="words"
               placeholderTextColor="#ccc"
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Introduce tu teléfono"
-              value={phone}
-              onChangeText={setPhone}
-              keyboardType="phone-pad"
-              placeholderTextColor="#ccc"
-            />
+            <View style={styles.phoneInputContainer}>
+              <TextInput
+                style={[styles.phoneLadaInput]}
+                value={area}
+                editable={false}
+              />
+              <TextInput
+                style={[styles.phoneInput]}
+                placeholder="Introduce tu teléfono"
+                value={phone}
+                onChangeText={setPhone}
+                keyboardType="phone-pad"
+                placeholderTextColor="#ccc"
+              />
+            </View>
             <TextInput
               style={styles.input}
               placeholder="Introduce tu correo electrónico"
@@ -161,6 +169,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  phoneInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    height: 50,
+    marginBottom: 10,
+  },
+  phoneLadaInput: {
+    width: 50, // Ajusta el ancho para el prefijo
+    textAlign: 'center', // Centra el texto del prefijo
+    color: '#fff',
+    backgroundColor: 'transparent', // Sin fondo adicional
+  },
+  phoneInput: {
+    flex: 1,
+    color: '#fff',
+    paddingHorizontal: 10,
+    
   },
   link: {
     fontSize: 16,
