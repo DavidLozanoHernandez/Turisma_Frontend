@@ -3,62 +3,111 @@ import { useContext, useEffect, useState } from "react";
 import ReservationDatasorceImp from "../../infraestructure/reservationDatasourceImp";
 import { AuthContext } from "../../../auth/aplication/providers/authProvider";
 
-const getreservation = new ReservationDatasorceImp
+const getreservation = new ReservationDatasorceImp();
 
-// Definir el tipo de status
-type ReservationStatus = "Pendiente" | "Completa" | "Cancelada";
+type ReservationStatus = "PENDING" | "COMPLETE" | "CANCELED";
 
-// Definir el tipo para cada reservación
 interface Reservation {
   id: string;
   excursion: string;
-  date: string;
+  startDate: string;
+  endDate: string;
   status: ReservationStatus;
 }
 
 export function ReservationView() {
-  const authContext = useContext(AuthContext)
-  const token = authContext?.userToken
+  const authContext = useContext(AuthContext);
+  const token = authContext?.userToken;
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
 
-  //useEffect(() => {
+  useEffect(() => {
     const handleGetReservation = async () => {
       if (token) {
         try {
+          setLoading(true);
           const data = await getreservation.getReservationId(token);
-          console.log("Datos de la reservacion", data.seats)
+
+          console.log("Respuesta de la API: ", data);
+
+          if (Array.isArray(data)) {
+            const formattedReservations = data.map((reservationData: any) => {
+              const startDate = new Date(reservationData.excursion.departureDate);
+              const endDate = new Date(reservationData.excursion.arrivalDate);
+            
+              if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+              }
+            
+              return {
+                id: reservationData.id.toString(),
+                excursion: reservationData.excursion.name,
+                startDate: formatDate(startDate),
+                endDate: formatDate(endDate),
+                status: reservationData.statusReserv as ReservationStatus,
+              };
+            });
+            
+
+            setReservations(formattedReservations.filter((reservation) => reservation !== null));
+          } else {
+            setError("La respuesta no contiene datos válidos.");
+          }
         } catch (err) {
           if (err instanceof Error) {
             setError(err.message);
-        } else {
+          } else {
             setError('Ocurrió un error desconocido');
-        }
+          }
+        } finally {
+          setLoading(false);
         }
       }
     };
-    //handleGetReservation();
-  //}, []);
 
-  // Simulación de reservaciones con tipo definido
-  const [reservations, setReservations] = useState<Reservation[]>([
-    { id: '1', excursion: 'Zacatlán, Puebla', date: '12 al 14 de Noviembre 2024', status: "Pendiente" },
-    { id: '2', excursion: 'Excursión al lago', date: '20 al 22 de Octubre 2024', status: "Completa" },
-    { id: '3', excursion: 'Excursión a la ciudad', date: '30 al 2 de Diciembre 2024', status: "Cancelada" },
-  ]);
+    handleGetReservation();
+  }, [token]);
 
-  // Función para obtener color del estatus
+  const formatDate = (date: Date) => {
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      timeZone: "UTC",
+    };
+  
+    return date.toLocaleDateString("es-ES", options);
+  };
+
   const getStatusColor = (status: ReservationStatus) => {
     switch (status) {
-      case "Pendiente":
-        return "#FFD700"; // Amarillo dorado
-      case "Completa":
-        return "#32CD32"; // Verde lima
-      case "Cancelada":
-        return "#FF6347"; // Rojo tomate
+      case "PENDING":
+        return "#FFD700";
+      case "COMPLETE":
+        return "#32CD32";
+      case "CANCELED":
+        return "#FF6347";
       default:
-        return "#ccc"; // Gris claro
+        return "#ccc";
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Cargando reservaciones...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>Error: {error}</Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -68,14 +117,14 @@ export function ReservationView() {
         <Text style={styles.title}>Tus reservaciones</Text>
       }
       renderItem={({ item }) => (
-        <TouchableOpacity style={styles.reservationCard} onPress={() => console.log(`Reservación ${item.id} seleccionada`,)}>
+        <TouchableOpacity style={styles.reservationCard} onPress={() => console.log(`Reservación ${item.id} seleccionada`)}>
           <Text style={styles.excursion}>{item.excursion}</Text>
-          <Text style={styles.date}>Fecha: {item.date}</Text>
+          <Text style={styles.date}>Salida: {item.startDate}</Text>
+          <Text style={styles.date}>Regreso: {item.endDate}</Text>
           <View style={styles.statusContainer}>
             <Text style={styles.statusLabel}>Estatus: </Text>
             <Text style={[styles.statusValue, { color: getStatusColor(item.status) }]}>{item.status}</Text>
           </View>
-          <TouchableOpacity onPress={handleGetReservation}><Text>hola</Text></TouchableOpacity>
         </TouchableOpacity>
       )}
       contentContainerStyle={styles.container}
@@ -120,10 +169,30 @@ const styles = StyleSheet.create({
   },
   statusLabel: {
     fontSize: 16,
-    color: '#fff', // Color blanco para la etiqueta "Estatus:"
+    color: '#fff',
   },
   statusValue: {
     fontSize: 16,
-    fontWeight: 'bold', // Color dinámico para el valor del estatus
+    fontWeight: 'bold',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0f0c29',
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0f0c29',
+  },
+  errorText: {
+    color: '#FF6347',
+    fontSize: 18,
   },
 });

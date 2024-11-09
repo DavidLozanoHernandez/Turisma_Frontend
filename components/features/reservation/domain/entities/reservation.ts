@@ -1,3 +1,4 @@
+import { Excursion } from "../../../excursion/domain/excursion";
 import { ReservationPayment } from "./payment";
 import { ReservationSeat } from "./seat";
 
@@ -9,6 +10,7 @@ export class Reservation{
     statusReserv:string;
     payment: ReservationPayment | null;
     seats: ReservationSeat | null;
+    excursion: Excursion | null;
 
     constructor(
         id: number,
@@ -18,6 +20,7 @@ export class Reservation{
         statusReserv:string,
         payment: ReservationPayment | null,
         seats: ReservationSeat | null,
+        excursion: Excursion | null,
     ){
         this.id = id;
         this.userId = userId;
@@ -26,5 +29,6 @@ export class Reservation{
         this.statusReserv = statusReserv;
         this.payment = payment;
         this.seats = seats;
+        this.excursion = excursion
     }
 }
