@@ -1,5 +1,9 @@
 import { Text, View, FlatList, StyleSheet, TouchableOpacity } from "react-native";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import ReservationDatasorceImp from "../../infraestructure/reservationDatasourceImp";
+import { AuthContext } from "../../../auth/aplication/providers/authProvider";
+
+const getreservation = new ReservationDatasorceImp
 
 // Definir el tipo de status
 type ReservationStatus = "Pendiente" | "Completa" | "Cancelada";
@@ -13,6 +17,28 @@ interface Reservation {
 }
 
 export function ReservationView() {
+  const authContext = useContext(AuthContext)
+  const token = authContext?.userToken
+  const [error, setError] = useState('');
+
+  //useEffect(() => {
+    const handleGetReservation = async () => {
+      if (token) {
+        try {
+          const data = await getreservation.getReservationId(token);
+          console.log("Datos de la reservacion", data.seats)
+        } catch (err) {
+          if (err instanceof Error) {
+            setError(err.message);
+        } else {
+            setError('Ocurrió un error desconocido');
+        }
+        }
+      }
+    };
+    //handleGetReservation();
+  //}, []);
+
   // Simulación de reservaciones con tipo definido
   const [reservations, setReservations] = useState<Reservation[]>([
     { id: '1', excursion: 'Zacatlán, Puebla', date: '12 al 14 de Noviembre 2024', status: "Pendiente" },
@@ -42,13 +68,14 @@ export function ReservationView() {
         <Text style={styles.title}>Tus reservaciones</Text>
       }
       renderItem={({ item }) => (
-        <TouchableOpacity style={styles.reservationCard} onPress={() => console.log(`Reservación ${item.id} seleccionada`)}>
+        <TouchableOpacity style={styles.reservationCard} onPress={() => console.log(`Reservación ${item.id} seleccionada`,)}>
           <Text style={styles.excursion}>{item.excursion}</Text>
           <Text style={styles.date}>Fecha: {item.date}</Text>
           <View style={styles.statusContainer}>
             <Text style={styles.statusLabel}>Estatus: </Text>
             <Text style={[styles.statusValue, { color: getStatusColor(item.status) }]}>{item.status}</Text>
           </View>
+          <TouchableOpacity onPress={handleGetReservation}><Text>hola</Text></TouchableOpacity>
         </TouchableOpacity>
       )}
       contentContainerStyle={styles.container}
