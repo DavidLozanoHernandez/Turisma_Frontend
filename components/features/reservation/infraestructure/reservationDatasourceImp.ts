@@ -4,7 +4,7 @@ import ReservationSource from "../domain/dataresources/reservationsource";
 import { ReservationPayment } from "../domain/entities/payment";
 import { ReservationSeat } from "../domain/entities/seat";
 import { Reservation } from "../domain/entities/reservation";
-import { Excursion } from "../../excursion/domain/excursion";
+import { Excursion } from "../../excursion/domain/entities/excursion";
 
 class ReservationDatasorceImp implements ReservationSource {
     async getReservationId(token: string): Promise<any> {
@@ -51,7 +51,8 @@ class ReservationDatasorceImp implements ReservationSource {
                 data.excursion.transportId,
                 data.excursion.outPoint,
                 data.excursion.status,
-                data.excursion.likes
+                data.excursion.likes,
+                data.excursion.phothos,
               )
             : null;
   

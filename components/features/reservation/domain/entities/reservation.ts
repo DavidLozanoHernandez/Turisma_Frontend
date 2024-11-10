@@ -1,4 +1,4 @@
-import { Excursion } from "../../../excursion/domain/excursion";
+import { Excursion } from "../../../excursion/domain/entities/excursion";
 import { ReservationPayment } from "./payment";
 import { ReservationSeat } from "./seat";
 

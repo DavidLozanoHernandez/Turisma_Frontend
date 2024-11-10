@@ -1,3 +1,7 @@
+import { ExcursionPhotos } from "./photos";
+import { ExcursionStopPoints } from "./stopPoints";
+import { ExcursionTransport } from "./transport";
+
 export class Excursion{
     id: number;
     name: string;
@@ -10,6 +14,9 @@ export class Excursion{
     outPoint: string;
     status: string;
     likes: number;
+    photos: ExcursionPhotos | null;
+    stopPoints: ExcursionStopPoints | null;
+    trasport: ExcursionTransport | null;
 
     constructor(
         id: number,
@@ -22,7 +29,10 @@ export class Excursion{
         transportId: number | null,
         outPoint: string,
         status: string,
-        likes: number
+        likes: number,
+        phothos: ExcursionPhotos | null,
+        stopPoints: ExcursionStopPoints | null,
+        trasport: ExcursionTransport | null,
     ) {
         this.id = id;
         this.name = name;
@@ -35,5 +45,8 @@ export class Excursion{
         this.outPoint = outPoint;
         this.status = status;
         this.likes = likes;
+        this.photos = phothos;
+        this.stopPoints = stopPoints;
+        this.trasport = trasport;
     }
 }
