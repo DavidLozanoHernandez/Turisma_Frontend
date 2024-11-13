@@ -370,6 +370,7 @@ export function CustomerView() {
                                 placeholder="Ingresa tu nueva contraseña"
                                 placeholderTextColor={"rgba(255, 255, 255, 0.20)"}
                                 value={password}
+                                secureTextEntry
                                 onChangeText={setPassword}
                             />
                         </View>
