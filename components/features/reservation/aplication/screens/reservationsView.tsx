@@ -29,7 +29,7 @@ export function ReservationView() {
           setLoading(true);
           const data = await getreservation.getReservationId(token);
 
-          console.log("Respuesta de la API: ", data);
+          //console.log("Respuesta de la API: ", data);
 
           if (Array.isArray(data)) {
             const formattedReservations = data.map((reservationData: any) => {

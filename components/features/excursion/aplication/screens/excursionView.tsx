@@ -1,87 +1,187 @@
-import { Link, useRouter } from "expo-router";
-import { useContext, useEffect } from "react";
-import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
+import { Link, useLocalSearchParams, useRouter } from "expo-router";
+import { useContext, useEffect, useState } from "react";
+import { ScrollView, StyleSheet, Text, View, Image, Animated } from "react-native";
 import { AuthContext } from "../../../auth/aplication/providers/authProvider";
+import ExcursionDatasourceImp from "../../infraestructure/datasources/excursionDatasourceImp";
 
-type ReservationStatus = "Pendiente" | "Completa" | "Cancelada";
+const Excursion = new ExcursionDatasourceImp;
 
-const getStatusColor = (status: ReservationStatus) => {
-    switch (status) {
-        case "Pendiente":
-            return "#FFD700"; // Amarillo dorado
-        case "Completa":
-            return "#32CD32"; // Verde lima
-        case "Cancelada":
-            return "#FF6347"; // Rojo tomate
-        default:
-            return "#ccc"; // Gris claro
-    }
-};
+type ExcursionStatus = "PENDING" | "COMPLETE" | "CANCELED";
+
+type ExcursionType = {
+    id: number;
+    name: string;
+    description: string;
+    departureDate: string;
+    arrivalDate: string;
+    price: number;
+    duration: number;
+    transportId: string;
+    outPoint: string;
+    status: ExcursionStatus;
+    likes: number;
+    photos: string[]; // Array de objetos con imageUrl
+    stopPoints: {
+        id: number;
+        name: string;
+        activities: { id: number; name: string }[]; 
+    }[]; 
+    transport: { type: string; brand: string; model: string }; 
+}
 
 export function ExcursionView() {
     const authContext = useContext(AuthContext);
     const router = useRouter();
+    const token = authContext?.userToken;
     const user = authContext?.user;
-    const status: ReservationStatus = "Pendiente"; // Cambia este valor según el estatus actual
+    const [excursion, setExcursion] = useState<ExcursionType | null>(null);
+    const [error, setError] = useState('');
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [fadeAnim] = useState(new Animated.Value(1)); // Inicializar con opacidad 1 (visible)
+    const { id } = useLocalSearchParams<{ id: string }>();
 
     useEffect(() => {
-        if (!user) {
-            router.replace('/auth/login');
-        }
-    }, [user]);
+        const handleGetExcursionId = async () => {
+            if (token && id) {
+                try {
+                    const data = await Excursion.getExcursionsId(token, parseInt(id, 10));
+                    setExcursion(data);
+                } catch (err) {
+                    if (err instanceof Error) {
+                        setError(err.message);
+                    } else {
+                        setError('Ocurrió un error desconocido');
+                    }
+                }
+            }
+        };
+        handleGetExcursionId();
+    }, [token, id]);
 
+    const getStatusColor = (status: ExcursionStatus) => {
+        switch (status) {
+            case "PENDING":
+                return "#FFD700"; // Amarillo dorado
+            case "COMPLETE":
+                return "#32CD32"; // Verde lima
+            case "CANCELED":
+                return "#FF6347"; // Rojo tomate
+            default:
+                return "#ccc"; // Gris claro
+        }
+    };
+
+    const formatDate = (date: Date) => {
+        const options: Intl.DateTimeFormatOptions = {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            timeZone: "UTC",
+        };
+        return date.toLocaleDateString("es-ES", options);
+    };
+
+    // Función para la animación de fade
+    const fadeIn = () => {
+        fadeAnim.setValue(0); // Reiniciar la opacidad a 0
+        Animated.timing(fadeAnim, {
+            toValue: 1, // Desvanecimiento total
+            duration: 1000, // Duración de la animación
+            useNativeDriver: true,
+        }).start();
+    };
+
+    // Cambiar la imagen cada 3 segundos
+    useEffect(() => {
+        if (excursion && excursion.photos?.length > 0) {
+            const interval = setInterval(() => {
+                setCurrentImageIndex((prevIndex) => {
+                    const nextIndex = prevIndex + 1;
+                    return nextIndex < excursion.photos.length ? nextIndex : 0;
+                });
+            }, 3000); // Cambiar cada 3 segundos (3000 ms)
+
+            // Limpiar el intervalo al desmontar el componente
+            return () => clearInterval(interval);
+        }
+    }, [excursion]);
+
+    useEffect(() => {
+        fadeIn(); // Ejecutar la animación cada vez que cambia la imagen
+    }, [currentImageIndex]);
+
+    if (!excursion) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.title}>Cargando...</Text>
+            </View>
+        );
+    }
+
+    console.log("fotos", excursion.photos)
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
                 <Text style={styles.title}>Detalles de la excursión a:</Text>
-                <Text style={styles.excursionName}>Zacatlán, Puebla</Text>
+                <Text style={styles.excursionName}>{excursion.name}</Text>
 
-                <Image
-                    style={styles.image}
-                    source={{
-                        uri: "https://turiticket.com/puebla/wp-content/uploads/2023/01/mirador-zacatlan-.jpeg", // Imagen del destino
-                    }}
-                />
+                {/* Mostrar las imágenes */}
+                {excursion.photos && excursion.photos.length > 0 && (
+                    <Animated.Image
+                        style={[styles.image, { opacity: fadeAnim }]} // Aplicar animación de opacidad
+                        source={{ uri: excursion.photos[currentImageIndex]}}
+                        onLoad={() => fadeIn()} // Asegurarnos que la animación de fade in comienza cuando la imagen se haya cargado
+                    />
+                )}
 
                 <View style={styles.dateContainer}>
                     <Image
-                        source={{ uri: "https://img.icons8.com/fluency-systems-filled/48/FFFFFF/calendar.png" }}
                         style={styles.calendarIcon}
+                        source={{ uri: "https://img.icons8.com/fluency-systems-filled/48/FFFFFF/calendar.png" }}
                     />
-                    <Text style={styles.date}>12 al 14 de Noviembre 2024 (2 días)</Text>
+                    <Text style={styles.date}>Día de salida: {formatDate(new Date(excursion.departureDate))}</Text>
                 </View>
 
-                <Text style={styles.description}>
-                    Zacatlán es famoso por sus montañas, cascadas y paisajes impresionantes.
-                    Durante esta excursión, podrás explorar el reloj floral, disfrutar de las vistas en los miradores,
-                    y conocer la historia del pueblo mágico.
-                </Text>
+                <View style={styles.dateContainer}>
+                    <Image
+                        style={styles.calendarIcon}
+                        source={{ uri: "https://img.icons8.com/fluency-systems-filled/48/FFFFFF/calendar.png" }}
+                    />
+                    <Text style={styles.date}>Día de llegada: {formatDate(new Date(excursion.arrivalDate))}</Text>
+                </View>
 
-                <Text style={styles.price}>$500 MXN/Persona</Text>
+                <Text style={styles.description}>{excursion.description}</Text>
+                <Text style={styles.price}>{excursion.price}/Persona</Text>
                 <Text style={styles.text}>Viaje redondo</Text>
 
-                {/* Estatus con color específico para la palabra del estatus */}
                 <View style={styles.statusContainer}>
                     <Text style={styles.statusLabel}>Estatus: </Text>
-                    <Text style={[styles.statusValue, { color: getStatusColor(status) }]}>
-                        {status}
+                    <Text style={[styles.statusValue, { color: getStatusColor(excursion.status) }]}>
+                        {excursion.status}
                     </Text>
                 </View>
 
+                {/* Actividades incluidas */}
                 <Text style={styles.subtitle}>Actividades Incluidas:</Text>
                 <View style={styles.listContainer}>
-                    <Text style={styles.listItem}>• Salida al zócalo</Text>
-                    <Text style={styles.listItem}>• Caminata por el centro</Text>
-                    <Text style={styles.listItem}>• Visita al mirador</Text>
+                    {excursion.stopPoints.map((stopPoint) =>
+                        stopPoint.activities.map((activity) => (
+                            <Text key={activity.id} style={styles.listItem}>• {activity.name}</Text>
+                        ))
+                    )}
                 </View>
 
+                {/* Transporte */}
                 <Text style={styles.subtitle}>Transporte:</Text>
-                <Text style={styles.transport}>Combi</Text>
+                <Text style={styles.transport}>{excursion.transport?.brand} {excursion.transport?.model} ({excursion.transport?.type})</Text>
 
+                {/* Paradas programadas */}
                 <Text style={styles.subtitle}>Paradas programadas:</Text>
                 <View style={styles.listContainer}>
-                    <Text style={styles.listItem}>• Cascadas</Text>
-                    <Text style={styles.listItem}>• Mirador de Zacatlán</Text>
+                    {excursion.stopPoints.map((stopPoint) => (
+                        <Text key={stopPoint.id} style={styles.listItem}>• {stopPoint.name}</Text>
+                    ))}
                 </View>
 
                 <Link href={"/reservation/makeReservation"} style={styles.link}>
@@ -122,7 +222,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     image: {
-        width: "105%",
+        width: "100%",
         height: 205,
         borderRadius: 15,
         marginBottom: 20,
