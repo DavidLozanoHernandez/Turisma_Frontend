@@ -1,8 +1,8 @@
 import { Link, router } from "expo-router";
-import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import { useState, useContext } from "react";
+import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import AuthDatasoruceImp from "../../infraestructure/datasources/authDatasoruceImp";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "../providers/authProvider";
 
 const loginDatasource = new AuthDatasoruceImp();
 
@@ -11,16 +11,17 @@ export function LoginView() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
+  const authContext = useContext(AuthContext);
 
   const handleLogin = async () => {
     try {
         const data = await loginDatasource.login(username, password);
-        const {accessToken, user} = data;
+        const { accessToken, user } = data;
 
-        await AsyncStorage.setItem('authToken', accessToken);
-        await AsyncStorage.setItem('user', JSON.stringify(user));
-
-        router.replace('/(tabs)/home')
+        if (authContext) { 
+            await authContext.login(accessToken, user); 
+            router.replace('/(tabs)/home');
+        }
     } catch (err) {
         if (err instanceof Error) {
             setError(err.message);

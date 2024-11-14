@@ -1,5 +1,3 @@
-// authProvider.tsx
-
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../../domain/entities/auth';
@@ -24,9 +22,12 @@ export const AuthProvider = ({ children }: any) => {
                 const userData = await AsyncStorage.getItem('user');
                 if (token) {
                     setUserToken(token);
+                    console.log("Token almacenado:", token);
                 }
                 if (userData) {
-                    setUser(JSON.parse(userData));
+                    const parsedUser = JSON.parse(userData);
+                    setUser(parsedUser);
+                    console.log("Datos del usuario almacenados:", parsedUser);
                 }
             } catch (error) {
                 console.error("Error al cargar el token o el usuario: ", error);
@@ -45,7 +46,6 @@ export const AuthProvider = ({ children }: any) => {
             console.error("Error al almacenar el token o el usuario: ", error);
         }
     };
-    
 
     const logout = async () => {
         setUserToken(null);

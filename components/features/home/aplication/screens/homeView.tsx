@@ -1,47 +1,152 @@
-import { Link } from "expo-router";
-import { Text, View, StyleSheet, ScrollView, Image } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { View, Text, ScrollView, StyleSheet, Image, Animated } from "react-native";
+import { Link, router } from "expo-router";
+import { AuthContext } from "../../../auth/aplication/providers/authProvider";
+import ExcursionDatasourceImp from "../../../excursion/infraestructure/datasources/excursionDatasourceImp";
+
+const Excursion = new ExcursionDatasourceImp;
+
+type ExcursionType = {
+    id: number;
+    name: string;
+    description: string;
+    departureDate: string;
+    arrivalDate: string;
+    price: number;
+    duration: number;
+    transportId: string;
+    outPoint: string;
+    status: string;
+    likes: number;
+    photos?: { imageUrl: string[] };
+}
 
 export function HomeView() {
+    const authContext = useContext(AuthContext);
+    const token = authContext?.userToken;
+    const [excursion, setExcursion] = useState<ExcursionType[]>([]);
+    const user = authContext?.user;
+    const [error, setError] = useState('');
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    const [fadeAnim] = useState(new Animated.Value(0)); // Para animar la opacidad de las imágenes
+    const [imageChangeInterval, setImageChangeInterval] = useState<NodeJS.Timeout | null>(null);
+
+    useEffect(() => {
+        const handleGetExcursion = async () => {
+            if (token) {
+                try {
+                    const data = await Excursion.getExcursions(token);
+                    console.log(JSON.stringify(data));
+                    setExcursion(data);
+                } catch (err) {
+                    if (err instanceof Error) {
+                        setError(err.message);
+                    } else {
+                        setError('Ocurrió un error desconocido');
+                    }
+                }
+            }
+        };
+        handleGetExcursion();
+    }, [token]);
+
+    const formatDate = (date: Date) => {
+        const options: Intl.DateTimeFormatOptions = {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            timeZone: "UTC",
+        };
+        return date.toLocaleDateString("es-ES", options);
+    };
+
+    useEffect(() => {
+        if (!user) {
+            router.replace('/auth/login');
+        }
+    }, [user]);
+
+    // Manejar la animación de fade
+    const fadeIn = () => {
+        fadeAnim.setValue(0); // Reiniciar la opacidad
+        Animated.timing(fadeAnim, {
+            toValue: 1, // Desvanecimiento total
+            duration: 1000, // Duración de la animación
+            useNativeDriver: true, // Mejor rendimiento
+        }).start();
+    };
+
+    useEffect(() => {
+        if (excursion.length > 0 && excursion[0].photos?.imageUrl?.length) {
+            const interval = setInterval(() => {
+                setCurrentImageIndex((prevIndex) => {
+                    const nextIndex = prevIndex + 1;
+                    return nextIndex < (excursion[0].photos?.imageUrl.length || 0)
+                        ? nextIndex
+                        : 0; // Volver a la primera imagen si llegamos al final
+                });
+            }, 3000); // Cambiar cada 3 segundos (3000 ms)
+
+            setImageChangeInterval(interval);
+
+            // Limpiar el intervalo al desmontar el componente
+            return () => {
+                if (interval) clearInterval(interval);
+            };
+        }
+    }, [excursion]);
+
+    useEffect(() => {
+        fadeIn(); // Ejecutar la animación cada vez que cambia la imagen
+    }, [currentImageIndex]);
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            {/* Título con logo dentro del óvalo */}
             <View style={styles.titleContainer}>
                 <Image
                     style={styles.logo}
-                    source={require("../../../../../assets/images/TURISMA_logo.png")} // Ruta local de la imagen del logo
+                    source={require("../../../../../assets/images/TURISMA_logo.png")}
                 />
                 <Text style={styles.title}>¡Bienvenido a TURISMA!</Text>
             </View>
 
-            <View style={styles.card}>
-                <Image
-                    style={styles.image}
-                    source={{
-                        uri: "https://turiticket.com/puebla/wp-content/uploads/2023/01/mirador-zacatlan-.jpeg", // Imagen del destino
-                    }}
-                />
+            {excursion.map((excursion) => (
+                <View style={styles.card} key={excursion.id}>
+                    {/* Mostrar solo una imagen a la vez */}
+                    {excursion.photos?.imageUrl && excursion.photos.imageUrl.length > 0 && (
+                        <Animated.Image
+                            style={[styles.image, { opacity: fadeAnim }]} // Aplicar animación de opacidad
+                            source={{ uri: excursion.photos.imageUrl[currentImageIndex] || 'default-image-url' }}
+                        />
+                    )}
 
-                <Text style={styles.excursionName}>Zacatlán, Puebla</Text>
-                <View style={styles.dateContainer}>
-                    <Image
-                        style={styles.calendarIcon}
-                        source={{ uri: "https://img.icons8.com/fluency-systems-filled/48/FFFFFF/calendar.png" }}
-                    />
-                    <Text style={styles.date}>12 al 14 de Noviembre 2024 (2 días)</Text>
+                    <Text style={styles.excursionName}>{excursion.name}</Text>
+                    <View style={styles.dateContainer}>
+                        <Image
+                            style={styles.calendarIcon}
+                            source={{ uri: "https://img.icons8.com/fluency-systems-filled/48/FFFFFF/calendar.png" }}
+                        />
+                        <Text style={styles.date}>Dia de salida: {formatDate(new Date(excursion.departureDate))}</Text>
+                    </View>
+                    <View style={styles.dateContainer}>
+                        <Image
+                            style={styles.calendarIcon}
+                            source={{ uri: "https://img.icons8.com/fluency-systems-filled/48/FFFFFF/calendar.png" }}
+                        />
+                        <Text style={styles.date}>Dia de llegada: {formatDate(new Date(excursion.arrivalDate))}</Text>
+                    </View>
+
+                    <Text style={styles.description}>
+                        {excursion.description}
+                    </Text>
+
+                    <Text style={styles.price}>{excursion.price}/Persona</Text>
+                    <Text style={styles.text}>Viaje redondo</Text>
+
+                    <Link href={`/excursion?id=${excursion.id}`} style={styles.link}>Detalles de la excursión</Link>
                 </View>
-
-                <Text style={styles.description}>
-                    Zacatlán es famoso por sus montañas, cascadas y paisajes impresionantes.
-                    Durante esta excursión, podrás explorar el reloj floral, disfrutar de las vistas en los miradores,
-                    y conocer la historia del pueblo mágico.
-                </Text>
-
-                <Text style={styles.price}>$500 MXN/Persona</Text>
-                <Text style={styles.text}>Viaje redondo</Text>
-
-                <Link href="/excursion" style={styles.link}>Detalles de la excursión</Link>
-            </View>
-
+            ))}
         </ScrollView>
     );
 }
@@ -58,28 +163,28 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        borderColor: '#fff', // Borde blanco para los lados y la parte inferior
+        borderColor: '#fff', 
         borderWidth: 1,
-        borderTopWidth: 0, // Elimina el borde superior
+        borderTopWidth: 0, 
         paddingVertical: 3,
         paddingHorizontal: 17,
-        borderRadius: 31, // Hace que los bordes sean redondeados
+        borderRadius: 31,
         marginTop: 38,
         marginBottom: 30,
-        backgroundColor: 'transparent', // Fondo transparente
+        backgroundColor: 'transparent', 
     },
     logo: {
         width: 70,
         height: 70,
         left: 10,
-        marginRight: 15, // Espacio entre el logo y el texto
+        marginRight: 15, 
     },
     title: {
         fontSize: 22,
         fontWeight: "semibold",
-        color: "#fff", // Letras en color blanco
+        color: "#fff", 
         textAlign: "center",
-        fontFamily: 'sans-serif', // Fuente cursive para un estilo más elegante
+        fontFamily: 'sans-serif',
     },
     card: {
         width: '100%',
@@ -96,11 +201,11 @@ const styles = StyleSheet.create({
         },
     },
     image: {
-        width: "105%",
+        width: '100%',
         height: 205,
         borderRadius: 15,
         marginBottom: 20,
-        borderColor: "#f2d323", // Borde amarillo alrededor de la imagen
+        borderColor: "#f2d323", 
         borderWidth: 2,
     },
     excursionName: {
@@ -119,7 +224,7 @@ const styles = StyleSheet.create({
     calendarIcon: {
         width: 20,
         height: 20,
-        marginRight: 5, // Espacio entre el icono y la fecha
+        marginRight: 5, 
     },
     date: {
         fontSize: 16,
@@ -135,7 +240,7 @@ const styles = StyleSheet.create({
     price: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#28A745", // Verde para resaltar el precio
+        color: "#28A745", 
     },
     text: {
         fontSize: 12,
@@ -146,7 +251,7 @@ const styles = StyleSheet.create({
     link: {
         fontSize: 16,
         color: "#fff",
-        backgroundColor: "#28A745", // Botón verde llamativo
+        backgroundColor: "#28A745", 
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 10,
