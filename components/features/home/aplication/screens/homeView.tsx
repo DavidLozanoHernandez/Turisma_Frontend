@@ -28,7 +28,7 @@ export function HomeView() {
     const user = authContext?.user;
     const [error, setError] = useState('');
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [fadeAnim] = useState(new Animated.Value(0)); // Para animar la opacidad de las imágenes
+    const [fadeAnim] = useState(new Animated.Value(0)); 
     const [imageChangeInterval, setImageChangeInterval] = useState<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -67,13 +67,13 @@ export function HomeView() {
         }
     }, [user]);
 
-    // Manejar la animación de fade
+  
     const fadeIn = () => {
-        fadeAnim.setValue(0); // Reiniciar la opacidad
+        fadeAnim.setValue(0);
         Animated.timing(fadeAnim, {
-            toValue: 1, // Desvanecimiento total
-            duration: 1000, // Duración de la animación
-            useNativeDriver: true, // Mejor rendimiento
+            toValue: 1, 
+            duration: 1000, 
+            useNativeDriver: true,
         }).start();
     };
 
@@ -84,13 +84,13 @@ export function HomeView() {
                     const nextIndex = prevIndex + 1;
                     return nextIndex < (excursion[0].photos?.imageUrl.length || 0)
                         ? nextIndex
-                        : 0; // Volver a la primera imagen si llegamos al final
+                        : 0;
                 });
-            }, 3000); // Cambiar cada 3 segundos (3000 ms)
+            }, 3000); 
 
             setImageChangeInterval(interval);
 
-            // Limpiar el intervalo al desmontar el componente
+            
             return () => {
                 if (interval) clearInterval(interval);
             };
@@ -98,7 +98,7 @@ export function HomeView() {
     }, [excursion]);
 
     useEffect(() => {
-        fadeIn(); // Ejecutar la animación cada vez que cambia la imagen
+        fadeIn();
     }, [currentImageIndex]);
 
     return (
@@ -113,10 +113,10 @@ export function HomeView() {
 
             {excursion.map((excursion) => (
                 <View style={styles.card} key={excursion.id}>
-                    {/* Mostrar solo una imagen a la vez */}
+                    
                     {excursion.photos?.imageUrl && excursion.photos.imageUrl.length > 0 && (
                         <Animated.Image
-                            style={[styles.image, { opacity: fadeAnim }]} // Aplicar animación de opacidad
+                            style={[styles.image, { opacity: fadeAnim }]}
                             source={{ uri: excursion.photos.imageUrl[currentImageIndex] || 'default-image-url' }}
                         />
                     )}

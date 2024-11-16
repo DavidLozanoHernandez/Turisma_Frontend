@@ -60,7 +60,6 @@ class ExcursionDatasourceImp implements Excursionsource {
                 },
             });
 
-            // Si necesitas mapear la respuesta
         const data = response.data;
 
         const photos = data.photos && Array.isArray(data.photos)

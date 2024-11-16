@@ -20,7 +20,7 @@ type ExcursionType = {
     outPoint: string;
     status: ExcursionStatus;
     likes: number;
-    photos: string[]; // Array de objetos con imageUrl
+    photos: string[];
     stopPoints: {
         id: number;
         name: string;
@@ -37,7 +37,7 @@ export function ExcursionView() {
     const [excursion, setExcursion] = useState<ExcursionType | null>(null);
     const [error, setError] = useState('');
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [fadeAnim] = useState(new Animated.Value(1)); // Inicializar con opacidad 1 (visible)
+    const [fadeAnim] = useState(new Animated.Value(1));
     const { id } = useLocalSearchParams<{ id: string }>();
 
     useEffect(() => {
@@ -82,17 +82,17 @@ export function ExcursionView() {
         return date.toLocaleDateString("es-ES", options);
     };
 
-    // Función para la animación de fade
+   
     const fadeIn = () => {
-        fadeAnim.setValue(0); // Reiniciar la opacidad a 0
+        fadeAnim.setValue(0); 
         Animated.timing(fadeAnim, {
-            toValue: 1, // Desvanecimiento total
-            duration: 1000, // Duración de la animación
+            toValue: 1,
+            duration: 1000,
             useNativeDriver: true,
         }).start();
     };
 
-    // Cambiar la imagen cada 3 segundos
+
     useEffect(() => {
         if (excursion && excursion.photos?.length > 0) {
             const interval = setInterval(() => {
@@ -100,15 +100,15 @@ export function ExcursionView() {
                     const nextIndex = prevIndex + 1;
                     return nextIndex < excursion.photos.length ? nextIndex : 0;
                 });
-            }, 3000); // Cambiar cada 3 segundos (3000 ms)
+            }, 3000);
 
-            // Limpiar el intervalo al desmontar el componente
+            
             return () => clearInterval(interval);
         }
     }, [excursion]);
 
     useEffect(() => {
-        fadeIn(); // Ejecutar la animación cada vez que cambia la imagen
+        fadeIn(); 
     }, [currentImageIndex]);
 
     if (!excursion) {
@@ -126,12 +126,11 @@ export function ExcursionView() {
                 <Text style={styles.title}>Detalles de la excursión a:</Text>
                 <Text style={styles.excursionName}>{excursion.name}</Text>
 
-                {/* Mostrar las imágenes */}
                 {excursion.photos && excursion.photos.length > 0 && (
                     <Animated.Image
-                        style={[styles.image, { opacity: fadeAnim }]} // Aplicar animación de opacidad
+                        style={[styles.image, { opacity: fadeAnim }]}
                         source={{ uri: excursion.photos[currentImageIndex]}}
-                        onLoad={() => fadeIn()} // Asegurarnos que la animación de fade in comienza cuando la imagen se haya cargado
+                        onLoad={() => fadeIn()} 
                     />
                 )}
 
