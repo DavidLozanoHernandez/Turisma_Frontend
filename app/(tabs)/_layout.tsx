@@ -17,20 +17,20 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       <Tabs.Screen
-        name="excursion"
+        name="home"
         options={{
-          title: 'Excursiones',
+          title: 'Inicio',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="payment"
+        name="reservation"
         options={{
           title: 'Mis reservaciones',
           tabBarIcon: ({ color, focused }) => (
-            <AntDesign name="book" size={24} color="black" />
+            <AntDesign name="book" size={24} color="#c3c5d3" />
           ),
         }}
       />
@@ -39,8 +39,20 @@ export default function TabLayout() {
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color, focused }) => (
-            <FontAwesome6 name="user" size={24} color="black" />
+            <FontAwesome6 name="user" size={24} color="c3c5d3" />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="payment"
+        options={{
+          href: null
+        }}
+      />
+      <Tabs.Screen
+        name="excursion"
+        options={{
+          href: null
         }}
       />
     </Tabs>

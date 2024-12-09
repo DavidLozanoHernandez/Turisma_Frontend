@@ -9,7 +9,7 @@ export default function IndexApp() {
             //router.replace("/home")
 
             //llevarlo al login si no tiene sesion o para que se registre
-            router.replace("/(tabs)/excursion")
+            router.replace("/auth/login")
         }
     }, [loaded])
 
