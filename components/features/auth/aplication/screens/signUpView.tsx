@@ -20,7 +20,8 @@ export function SignUpView() {
 
   const handleRegister = async () => {
     try {
-      const data = await registerDataSource.register(firstName, lastName, password, phone, email)
+      const phonefull = area + phone;
+      const data = await registerDataSource.register(firstName, lastName, password, phonefull, email)
       console.log("Registro exitoso:", data);
 
       setSuccessMessage("Correo electrónico de verificación enviado. Por favor, revisa tu bandeja de entrada.");
